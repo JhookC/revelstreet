@@ -49,4 +49,9 @@ describe('FleetScreen', () => {
     await renderFleet();
     expect(screen.getByText('Loading fleet…')).toBeInTheDocument();
   });
+
+  it('shows empty state when the fleet has no routes', async () => {
+    await renderFleet([]);
+    expect(screen.getByText('No routes assigned.')).toBeInTheDocument();
+  });
 });

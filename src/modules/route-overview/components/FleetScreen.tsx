@@ -37,7 +37,13 @@ export function FleetScreen() {
           </div>
         )}
 
-        {fleet && (
+        {fleet?.length === 0 && (
+          <div className="flex min-h-[40vh] items-center justify-center text-[var(--color-content-muted)]">
+            No routes assigned.
+          </div>
+        )}
+
+        {fleet && fleet.length > 0 && (
           <ul className="flex flex-col gap-3">
             {fleet.map((route) => (
               <li key={route.id}>
