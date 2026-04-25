@@ -58,7 +58,11 @@ export function ProgressHeader({ onBack }: Props) {
             <ProgressBar.Fill className="h-full rounded-full bg-status-success transition-all duration-300 ease-out" />
           </ProgressBar.Track>
         </ProgressBar>
-        {activeStop ? (
+        {totalCount === 0 ? (
+          <p className="mt-2 text-xs text-[var(--color-content-muted)]">
+            No stops assigned
+          </p>
+        ) : activeStop ? (
           <p className="mt-2 text-xs text-[var(--color-content-soft)]">
             Next:{' '}
             <span className="font-medium text-[var(--color-content)]">

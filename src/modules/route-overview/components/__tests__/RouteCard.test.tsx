@@ -4,7 +4,9 @@ import { renderWithRouter } from '@/test/utils';
 import { MOCK_FLEET } from '@/mock/fleet';
 import { RouteCard } from '../RouteCard';
 
-const [route001, route002, route003] = MOCK_FLEET;
+const route001 = MOCK_FLEET[0]!;
+const route002 = MOCK_FLEET[1]!;
+const route003 = MOCK_FLEET[2]!;
 
 describe('RouteCard', () => {
   it('shows route id and operatorId', async () => {

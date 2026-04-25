@@ -1,6 +1,6 @@
 import { useEffect, useState, type Ref } from 'react';
 import { Button } from '@heroui/react';
-import type { Stop, StopStatus } from '../types';
+import type { FailureReason, Stop, StopStatus } from '../types';
 import { useRoute } from '../context/RouteContext';
 import { StatusPill } from './StatusPill';
 import { FailureReasonSheet } from './FailureReasonSheet';
@@ -13,12 +13,12 @@ interface Props {
 }
 
 const formatTime = (ts: number) =>
-  new Date(ts).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  new Date(ts).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
 const capitalize = (s: string) =>
   s.charAt(0).toUpperCase() + s.slice(1);
 
-const formatReason = (r: string) =>
+const formatReason = (r: FailureReason) =>
   r.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
 
@@ -39,6 +39,52 @@ export function StopRow({ stop, isActive, isLocked, ref }: Props) {
   }, [stop.status]);
 
   const handle = (status: StopStatus) => () => markStatus(stop.id, status);
+
+  function activeActions() {
+    switch (stop.status) {
+      case 'pending':
+        return (
+          <Button size="lg" onPress={handle('arrived')}>
+            Mark Arrived
+          </Button>
+        );
+      case 'arrived':
+        return (
+          <Button size="lg" onPress={handle('departed')}>
+            Mark Departed
+          </Button>
+        );
+      case 'departed':
+        return (
+          <>
+            <Button
+              size="lg"
+              className="bg-status-success text-white hover:brightness-110"
+              onPress={handle('success')}
+            >
+              {stop.type === 'pickup' ? 'Picked up' : 'Delivered'}
+            </Button>
+            <Button
+              size="lg"
+              variant="ghost"
+              className="bg-status-failed/10 text-status-failed ring-1 ring-inset ring-status-failed/30 hover:bg-status-failed/15"
+              onPress={() => setPickerOpen(true)}
+              aria-label="Mark stop failed and pick a reason"
+            >
+              Failed…
+            </Button>
+          </>
+        );
+      case 'success':
+      case 'failed':
+        return null;
+      default: {
+        const _exhaustive: never = stop.status;
+        void _exhaustive;
+        return null;
+      }
+    }
+  }
 
   return (
     <li
@@ -86,35 +132,7 @@ export function StopRow({ stop, isActive, isLocked, ref }: Props) {
 
           {isActive && (
             <div className="mt-4 flex flex-wrap gap-2">
-              {stop.status === 'pending' && (
-                <Button size="lg" onPress={handle('arrived')}>
-                  Mark Arrived
-                </Button>
-              )}
-              {stop.status === 'arrived' && (
-                <Button size="lg" onPress={handle('departed')}>
-                  Mark Departed
-                </Button>
-              )}
-              {stop.status === 'departed' && (
-                <>
-                  <Button
-                    size="lg"
-                    className="bg-status-success text-white hover:brightness-110"
-                    onPress={handle('success')}
-                  >
-                    {stop.type === 'pickup' ? 'Picked up' : 'Delivered'}
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="ghost"
-                    className="bg-status-failed/10 text-status-failed ring-1 ring-inset ring-status-failed/30 hover:bg-status-failed/15"
-                    onPress={() => setPickerOpen(true)}
-                  >
-                    Failed…
-                  </Button>
-                </>
-              )}
+              {activeActions()}
             </div>
           )}
         </div>

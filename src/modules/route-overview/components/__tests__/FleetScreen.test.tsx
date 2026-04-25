@@ -62,7 +62,7 @@ describe('FleetScreen', () => {
     const positions = ['op-echo-3', 'op-fox-7', 'op-victor-2'].map((op) =>
       cards.findIndex((c) => c.textContent?.includes(op)),
     );
-    expect(positions[0]).toBeLessThan(positions[1]);
-    expect(positions[0]).toBeLessThan(positions[2]);
+    expect(positions[0]!).toBeLessThan(positions[1]!);
+    expect(positions[0]!).toBeLessThan(positions[2]!);
   });
 });

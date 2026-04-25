@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useRoute } from '../context/RouteContext';
 import { FINAL_STATUSES, type Stop } from '../types';
 import { StopRow } from './StopRow';
@@ -44,9 +44,12 @@ export function StopList() {
     }
   }, [activeStopId, route.stops]);
 
-  const sorted = [...route.stops].sort((a, b) => a.order - b.order);
-  const pickups = sorted.filter((s) => s.type === 'pickup');
-  const deliveries = sorted.filter((s) => s.type === 'delivery');
+  const sorted = useMemo(
+    () => [...route.stops].sort((a, b) => a.order - b.order),
+    [route.stops],
+  );
+  const pickups = useMemo(() => sorted.filter((s) => s.type === 'pickup'), [sorted]);
+  const deliveries = useMemo(() => sorted.filter((s) => s.type === 'delivery'), [sorted]);
 
   const renderStop = (stop: Stop) => {
     const isFinalized = FINAL_STATUSES.has(stop.status);
