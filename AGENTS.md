@@ -40,7 +40,7 @@ src/
 │       ├── api/             # TanStack Query hooks + query key factories
 │       ├── context/         # Feature context providers
 │       ├── types.ts         # Feature types
-│       ├── validation.ts    # Zod schemas (stub until forms exist)
+│       ├── validation.ts    # Zod schemas — add when first form lands (RHF + Zod)
 │       └── index.ts         # Barrel — the ONLY public surface of this module
 ├── shared/                  # Cross-cutting primitives
 │   ├── components/          # Generic UI — NO domain logic

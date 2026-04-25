@@ -1,5 +1,12 @@
-import { createElement } from 'react';
-import { createRouter, createRoute, createRootRoute, Outlet, useNavigate, NotFoundRoute, Link } from '@tanstack/react-router';
+import {
+  createRouter,
+  createRoute,
+  createRootRoute,
+  Outlet,
+  useNavigate,
+  NotFoundRoute,
+  Link,
+} from '@tanstack/react-router';
 import { FleetScreen } from '@/modules/route-overview';
 import { RouteScreen } from '@/modules/route-execution';
 
@@ -19,18 +26,23 @@ const routeDetailRoute = createRoute({
   component: function RouteDetailPage() {
     const { routeId } = routeDetailRoute.useParams();
     const navigate = useNavigate();
-    return createElement(RouteScreen, { routeId, onBack: () => void navigate({ to: '/' }) });
+    return <RouteScreen routeId={routeId} onBack={() => void navigate({ to: '/' })} />;
   },
 });
 
 const notFoundRoute = new NotFoundRoute({
   getParentRoute: () => rootRoute,
   component: function NotFoundPage() {
-    return createElement(
-      'div',
-      { className: 'flex min-h-screen flex-col items-center justify-center gap-4 bg-[var(--color-surface)] text-[var(--color-content)]' },
-      createElement('p', { className: 'text-xl font-semibold' }, '404 — Page not found'),
-      createElement(Link, { to: '/', className: 'text-sm text-[var(--color-content-muted)] underline hover:text-[var(--color-content)]' }, '← Back to fleet'),
+    return (
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-surface text-content">
+        <p className="text-xl font-semibold">404 — Page not found</p>
+        <Link
+          to="/"
+          className="text-sm text-content-muted underline hover:text-content"
+        >
+          ← Back to fleet
+        </Link>
+      </div>
     );
   },
 });

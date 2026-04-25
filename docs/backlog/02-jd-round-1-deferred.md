@@ -1,6 +1,7 @@
 # Judgment Day Round 1 — Deferred Findings
 
 **Date**: 2026-04-25
+**Resolved**: 2026-04-25 (all actionable items addressed in subsequent commits)
 **Context**: Adversarial parallel review of the 40-min MVP scaffold (`docs/plans/01-mvp-40min.md`). Two judges reviewed `src/modules/route-execution/**` blind to each other. This document captures everything NOT fixed in the post-JD remediation pass.
 
 ## Fixed in this PR (for reference)
@@ -21,14 +22,14 @@
 
 ## Deferred — Real WARNINGs (next PR or before v1.0)
 
-### D1 — Exhaustive switch on `StopStatus` in `StopRow` action chain
+### D1 ✅ — Exhaustive switch on `StopStatus` in `StopRow` action chain
 **Severity**: WARNING (real)
 **File**: `src/modules/route-execution/components/StopRow.tsx`
 **Description**: Action buttons render via `if/else` chains on `stop.status`. If a new status is added to the union (e.g., `'cancelled'`, `'in-transit'`), the active stop silently shows no buttons — operator is bricked.
 **Fix intent**: Replace `if` chain with `switch (stop.status)` using a `never` exhaustive default to force compile-time coverage when the union changes.
 **Why deferred**: The transition-guard fix (F3) already prevents reaching an unknown status via normal flow; the exhaustive check is defense-in-depth, not a current bug. Pair with FW2 (ESLint hardening — `@typescript-eslint/switch-exhaustiveness-check` rule).
 
-### D2 — `ProgressHeader` empty-route fallback
+### D2 ✅ — `ProgressHeader` empty-route fallback
 **Severity**: WARNING (real)
 **File**: `src/modules/route-execution/components/ProgressHeader.tsx`
 **Description**: When `totalCount === 0`, the header renders "Route complete · all stops finalized" — misleading: the route was never started.
@@ -44,7 +45,7 @@
 
 ---
 
-## Deferred — Suggestions (batch with FW2 lint pass)
+## Deferred — Suggestions (batch with FW2 lint pass) — all resolved ✅
 
 ### S-1 — Replace `text-[var(--color-foo)]` with token utilities (`text-foo`)
 **Files**: most components
