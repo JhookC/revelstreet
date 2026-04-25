@@ -17,7 +17,7 @@ test('clicking a route card navigates to the route screen', async ({ page }) => 
   await page.locator('li').filter({ hasText: 'op-fox-7' }).click();
 
   await expect(page).toHaveURL(/\/routes\/route-001/);
-  await expect(page.getByText('Active route')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'op-fox-7' })).toBeVisible();
   await expect(page.getByText('0 / 5 complete')).toBeVisible();
 });
 

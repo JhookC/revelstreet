@@ -26,9 +26,12 @@ export function ProgressHeader({ onBack }: Props) {
                 ← Fleet
               </button>
             )}
-            <h1 className="text-base font-semibold text-[var(--color-content)]">
-              Active route
-            </h1>
+            <div>
+              <h1 className="text-base font-semibold leading-tight text-[var(--color-content)]">
+                {route.operatorId}
+              </h1>
+              <p className="text-xs text-[var(--color-content-muted)]">{route.id}</p>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-sm tabular-nums text-[var(--color-content-muted)]">
