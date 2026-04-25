@@ -1,17 +1,31 @@
 import { Button, ProgressBar } from '@heroui/react';
 import { useRoute } from '../context/RouteContext';
 import { useTheme } from '@/shared/context/ThemeContext';
+import { useTelemetryQuery } from '../api';
+import { WeatherBanner } from './WeatherBanner';
 
 interface Props {
   onBack?: () => void;
 }
 
+function TelemetryChip({ label, value }: { label: string; value: string }) {
+  return (
+    <span className="flex items-baseline gap-0.5 rounded bg-surface-sunken px-1.5 py-0.5">
+      <span className="text-[10px] text-content-muted">{label}</span>
+      <span className="text-xs font-semibold tabular-nums text-content">{value}</span>
+    </span>
+  );
+}
+
 export function ProgressHeader({ onBack }: Props) {
   const { completedCount, totalCount, activeStop, route } = useRoute();
   const { theme, toggleTheme } = useTheme();
+  const { data: drone } = useTelemetryQuery(route.id);
 
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-surface/90 backdrop-blur">
+      <WeatherBanner routeId={route.id} />
+
       <div className="mx-auto max-w-2xl px-5 py-4">
         <div className="flex items-baseline justify-between">
           <div className="flex items-baseline gap-3">
@@ -47,6 +61,7 @@ export function ProgressHeader({ onBack }: Props) {
             </Button>
           </div>
         </div>
+
         <ProgressBar
           aria-label="Route progress"
           value={completedCount}
@@ -57,21 +72,30 @@ export function ProgressHeader({ onBack }: Props) {
             <ProgressBar.Fill className="h-full rounded-full bg-status-success transition-all duration-300 ease-out" />
           </ProgressBar.Track>
         </ProgressBar>
+
         {totalCount === 0 ? (
-          <p className="mt-2 text-xs text-content-muted">
-            No stops assigned
-          </p>
+          <p className="mt-2 text-xs text-content-muted">No stops assigned</p>
         ) : activeStop ? (
           <p className="mt-2 text-xs text-content-soft">
             Next:{' '}
-            <span className="font-medium text-content">
-              {activeStop.label}
-            </span>
+            <span className="font-medium text-content">{activeStop.label}</span>
           </p>
         ) : (
           <p className="mt-2 text-xs text-status-success font-medium">
             Route complete · all stops finalized
           </p>
+        )}
+
+        {drone && (
+          <div
+            className="mt-2 flex flex-wrap gap-1.5"
+            aria-label="Drone telemetry"
+          >
+            <TelemetryChip label="ALT" value={`${Math.round(drone.altitude)}m`} />
+            <TelemetryChip label="SPD" value={`${drone.speedMs.toFixed(1)} m/s`} />
+            <TelemetryChip label="BAT" value={`${Math.round(drone.batteryPct)}%`} />
+            <TelemetryChip label="HDG" value={`${Math.round(drone.heading)}°`} />
+          </div>
         )}
       </div>
     </header>

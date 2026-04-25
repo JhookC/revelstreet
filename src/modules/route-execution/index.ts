@@ -1,11 +1,14 @@
 export { RouteScreen } from './components/RouteScreen';
 export { RouteProvider, useRoute } from './context/RouteContext';
-export { routeKeys } from './api';
+export { routeKeys, useTelemetryQuery, useWeatherQuery } from './api';
 export type {
+  Coordinates,
+  DronePosition,
   FailureReason,
   Route,
   Stop,
   StopHistoryEntry,
   StopStatus,
   StopType,
+  WeatherCondition,
 } from './types';

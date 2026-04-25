@@ -18,6 +18,7 @@ interface ActionSnapshot {
   prevStatus: StopStatus;
   prevReason: FailureReason | undefined;
   prevHistoryLength: number;
+  prevPhotos: string[];
   nextStatus: StopStatus;
 }
 
@@ -30,6 +31,7 @@ interface RouteContextValue {
   completedCount: number;
   totalCount: number;
   markStatus: (stopId: string, next: StopStatus, reason?: FailureReason) => void;
+  addPhoto: (stopId: string, dataUrl: string) => void;
   lastAction: ActionSnapshot | null;
   undo: () => void;
   dismissUndo: () => void;
@@ -93,10 +95,10 @@ export function RouteProvider({ children, routeId }: RouteProviderProps) {
         prevStatus: target.status,
         prevReason: target.failureReason,
         prevHistoryLength: target.history.length,
+        prevPhotos: target.photos,
         nextStatus: next,
       };
 
-      // Optimistic cache update — immediate UI response
       queryClient.setQueryData<Route>(routeKeys.byId(routeId), (prev) => {
         if (!prev) return prev;
         const updated: Stop = {
@@ -112,9 +114,28 @@ export function RouteProvider({ children, routeId }: RouteProviderProps) {
       });
 
       setLastAction(snapshot);
-
-      // Background persist to server (MSW for now, real API later)
       markMutation.mutate({ stopId, status: next, reason });
+    },
+    [queryClient, routeId, markMutation],
+  );
+
+  const addPhoto = useCallback(
+    (stopId: string, dataUrl: string) => {
+      queryClient.setQueryData<Route>(routeKeys.byId(routeId), (prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          stops: prev.stops.map((s) =>
+            s.id === stopId ? { ...s, photos: [...s.photos, dataUrl] } : s,
+          ),
+        };
+      });
+      // Persist photo alongside current status
+      const current = queryClient.getQueryData<Route>(routeKeys.byId(routeId));
+      const target = current?.stops.find((s) => s.id === stopId);
+      if (target) {
+        markMutation.mutate({ stopId, status: target.status, photo: dataUrl });
+      }
     },
     [queryClient, routeId, markMutation],
   );
@@ -132,6 +153,7 @@ export function RouteProvider({ children, routeId }: RouteProviderProps) {
         status: snap.prevStatus,
         failureReason: snap.prevReason,
         history: target.history.slice(0, snap.prevHistoryLength),
+        photos: snap.prevPhotos,
       };
       return {
         ...prev,
@@ -159,6 +181,7 @@ export function RouteProvider({ children, routeId }: RouteProviderProps) {
       completedCount,
       totalCount,
       markStatus,
+      addPhoto,
       lastAction,
       undo,
       dismissUndo,
@@ -172,6 +195,7 @@ export function RouteProvider({ children, routeId }: RouteProviderProps) {
       completedCount,
       totalCount,
       markStatus,
+      addPhoto,
       lastAction,
       undo,
       dismissUndo,

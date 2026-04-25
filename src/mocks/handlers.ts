@@ -1,6 +1,12 @@
 import { http, HttpResponse } from 'msw';
 import { MOCK_FLEET } from '@/mock/fleet';
-import type { FailureReason, Route, StopStatus } from '@/modules/route-execution';
+import type {
+  DronePosition,
+  FailureReason,
+  Route,
+  StopStatus,
+  WeatherCondition,
+} from '@/modules/route-execution';
 
 let stores = new Map<string, Route>(MOCK_FLEET.map((r) => [r.id, structuredClone(r)]));
 
@@ -11,6 +17,7 @@ export function resetStore(): void {
 interface PatchStopBody {
   status: StopStatus;
   reason?: FailureReason;
+  photo?: string;
 }
 
 export const handlers = [
@@ -48,6 +55,7 @@ export const handlers = [
               status: body.status,
               failureReason: body.status === 'failed' ? body.reason : undefined,
               history: [...s.history, { at: Date.now(), status: body.status }],
+              photos: body.photo ? [...s.photos, body.photo] : s.photos,
             }
           : s,
       ),
@@ -55,5 +63,34 @@ export const handlers = [
 
     stores.set(params.routeId as string, updatedRoute);
     return HttpResponse.json(updatedRoute);
+  }),
+
+  // Simulates live drone telemetry — small jitter on each call to mimic movement
+  http.get('/api/routes/:routeId/telemetry', ({ params }) => {
+    const route = stores.get(params.routeId as string);
+    if (!route?.drone) {
+      return HttpResponse.json({ error: 'No telemetry' }, { status: 404 });
+    }
+
+    const jitter = () => (Math.random() - 0.5) * 0.0002;
+    const drone: DronePosition = {
+      ...route.drone,
+      lng: route.drone.lng + jitter(),
+      lat: route.drone.lat + jitter(),
+      heading: (route.drone.heading + Math.round((Math.random() - 0.5) * 10) + 360) % 360,
+      speedMs: Math.max(0, route.drone.speedMs + (Math.random() - 0.5) * 0.5),
+      batteryPct: Math.max(0, route.drone.batteryPct - Math.random() * 0.05),
+    };
+
+    return HttpResponse.json(drone);
+  }),
+
+  // Static mock weather — advisory level to test the banner
+  http.get('/api/weather', () => {
+    const condition: WeatherCondition = {
+      level: 'advisory',
+      summary: 'Gusts up to 28 km/h — proceed with care',
+    };
+    return HttpResponse.json(condition);
   }),
 ];

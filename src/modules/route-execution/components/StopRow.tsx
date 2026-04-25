@@ -4,6 +4,7 @@ import type { FailureReason, Stop, StopStatus } from '../types';
 import { useRoute } from '../context/RouteContext';
 import { StatusPill } from './StatusPill';
 import { FailureReasonSheet } from './FailureReasonSheet';
+import { PhotoProof } from './PhotoProof';
 
 interface Props {
   stop: Stop;
@@ -18,11 +19,11 @@ const formatTime = (ts: number) =>
 const formatReason = (r: FailureReason) =>
   r.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
-
 export function StopRow({ stop, isActive, isLocked, ref }: Props) {
-  const { markStatus } = useRoute();
+  const { markStatus, addPhoto } = useRoute();
   const [pickerOpen, setPickerOpen] = useState(false);
   const lastEntry = stop.history.at(-1);
+  const isTerminal = stop.status === 'success' || stop.status === 'failed';
 
   // Auto-close failure sheet if the stop's status changes out from under us
   // (e.g. an undo flips departed → arrived while the sheet is open).
@@ -88,9 +89,7 @@ export function StopRow({ stop, isActive, isLocked, ref }: Props) {
       ref={ref}
       className={[
         'rounded-3xl border bg-surface-raised p-5 shadow-sm transition',
-        isActive
-          ? 'border-accent ring-2 ring-accent/30'
-          : 'border-border',
+        isActive ? 'border-accent ring-2 ring-accent/30' : 'border-border',
         isLocked ? 'opacity-50' : '',
       ].join(' ')}
       aria-current={isActive ? 'step' : undefined}
@@ -120,11 +119,17 @@ export function StopRow({ stop, isActive, isLocked, ref }: Props) {
 
           {lastEntry && (
             <p className="mt-2 text-xs text-content-soft">
-              {lastEntry.status.charAt(0).toUpperCase() + lastEntry.status.slice(1)} at {formatTime(lastEntry.at)}
-              {stop.failureReason
-                ? ` • Reason: ${formatReason(stop.failureReason)}`
-                : ''}
+              {lastEntry.status.charAt(0).toUpperCase() + lastEntry.status.slice(1)} at{' '}
+              {formatTime(lastEntry.at)}
+              {stop.failureReason ? ` • Reason: ${formatReason(stop.failureReason)}` : ''}
             </p>
+          )}
+
+          {isTerminal && (
+            <PhotoProof
+              photos={stop.photos}
+              onAdd={(dataUrl) => addPhoto(stop.id, dataUrl)}
+            />
           )}
 
           {isActive && (

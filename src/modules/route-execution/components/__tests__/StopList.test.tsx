@@ -47,8 +47,8 @@ describe('StopList — stop rendering', () => {
     expect(screen.queryByRole('button', { name: /mark departed/i })).not.toBeInTheDocument();
   });
 
-  it('shows no action buttons when all stops are complete', () => {
+  it('shows no status-action buttons when all stops are complete', () => {
     renderWithRoute(<StopList />, { initialRoute: allDoneRoute });
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /mark arrived|mark departed|picked up|delivered|failed/i })).not.toBeInTheDocument();
   });
 });

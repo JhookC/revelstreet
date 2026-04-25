@@ -18,21 +18,41 @@ export interface StopHistoryEntry {
   status: StopStatus;
 }
 
+export interface Coordinates {
+  lng: number;
+  lat: number;
+}
+
+export interface DronePosition extends Coordinates {
+  heading: number; // degrees, 0 = north
+  altitude: number; // metres AGL
+  speedMs: number; // m/s
+  batteryPct: number; // 0–100
+}
+
+export interface WeatherCondition {
+  level: 'clear' | 'advisory' | 'warning' | 'grounded';
+  summary: string; // short human-readable description
+}
+
 export interface Stop {
   id: string;
   type: StopType;
   label: string;
   address: string;
+  coordinates: Coordinates;
   order: number;
   status: StopStatus;
   failureReason?: FailureReason;
   history: StopHistoryEntry[];
+  photos: string[]; // base64 data URLs, proof of delivery / pickup
 }
 
 export interface Route {
   id: string;
   operatorId: string;
   stops: Stop[];
+  drone?: DronePosition;
 }
 
 export const FINAL_STATUSES: ReadonlySet<StopStatus> = new Set([
