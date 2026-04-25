@@ -1,5 +1,11 @@
 import { render, type RenderOptions } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {
+  RouterProvider,
+  createRouter,
+  createRootRoute,
+  createMemoryHistory,
+} from '@tanstack/react-router';
 import type { ReactElement } from 'react';
 import { RouteProvider, routeKeys } from '@/modules/route-execution';
 import type { Route } from '@/modules/route-execution';
@@ -40,6 +46,21 @@ export function renderWithRoute(
   { initialRoute = MOCK_ROUTE, ...options }: RenderWithRouteOptions = {},
 ) {
   return render(<Providers initialRoute={initialRoute}>{ui}</Providers>, options);
+}
+
+export async function renderWithRouter(ui: ReactElement, options?: RenderOptions) {
+  const rootRoute = createRootRoute({ component: () => <>{ui}</> });
+  const router = createRouter({
+    routeTree: rootRoute,
+    history: createMemoryHistory({ initialEntries: ['/'] }),
+  });
+  await router.load();
+  return render(
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>,
+    options,
+  );
 }
 
 export * from '@testing-library/react';
