@@ -1,11 +1,32 @@
+import { useMemo } from 'react';
 import { useTheme } from '@/shared/context/ThemeContext';
 import { Button } from '@heroui/react';
+import type { Route } from '@/modules/route-execution';
 import { useFleetQuery } from '../api';
 import { RouteCard } from './RouteCard';
+
+const STATUS_ORDER: Record<string, number> = {
+  'in-progress': 0,
+  'not-started': 1,
+  complete: 2,
+};
+
+const TERMINAL = new Set(['success', 'failed'] as const);
+
+function routeStatusKey(route: Route): string {
+  const stops = route.stops;
+  if (stops.every((s) => s.status === 'pending')) return 'not-started';
+  if (stops.every((s) => TERMINAL.has(s.status as 'success' | 'failed'))) return 'complete';
+  return 'in-progress';
+}
 
 export function FleetScreen() {
   const { data: fleet, isLoading, isError } = useFleetQuery();
   const { theme, toggleTheme } = useTheme();
+  const sortedFleet = useMemo(
+    () => fleet ? [...fleet].sort((a, b) => STATUS_ORDER[routeStatusKey(a)]! - STATUS_ORDER[routeStatusKey(b)]!) : fleet,
+    [fleet],
+  );
 
   return (
     <div className="min-h-full bg-[var(--color-surface)]">
@@ -37,15 +58,15 @@ export function FleetScreen() {
           </div>
         )}
 
-        {fleet?.length === 0 && (
+        {sortedFleet?.length === 0 && (
           <div className="flex min-h-[40vh] items-center justify-center text-[var(--color-content-muted)]">
             No routes assigned.
           </div>
         )}
 
-        {fleet && fleet.length > 0 && (
+        {sortedFleet && sortedFleet.length > 0 && (
           <ul className="flex flex-col gap-3">
-            {fleet.map((route) => (
+            {sortedFleet.map((route) => (
               <li key={route.id}>
                 <RouteCard route={route} />
               </li>
