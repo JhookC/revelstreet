@@ -30,3 +30,23 @@ test('unknown routeId shows route-not-found error state', async ({ page }) => {
   await page.getByRole('button', { name: /back to fleet/i }).click();
   await expect(page).toHaveURL('/');
 });
+
+test('route progress persists across page reload', async ({ page }) => {
+  await page.goto('/routes/route-001');
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  await page.waitForLoadState('networkidle');
+
+  // Advance the first stop
+  await page.getByRole('button', { name: /mark arrived/i }).click();
+  await page.getByRole('button', { name: /mark departed/i }).click();
+  await page.getByRole('button', { name: /picked up/i }).first().click();
+
+  await expect(page.getByText('1 / 5 complete')).toBeVisible();
+
+  // Reload without clearing localStorage — progress should survive
+  await page.reload();
+  await page.waitForLoadState('networkidle');
+
+  await expect(page.getByText('1 / 5 complete')).toBeVisible();
+});

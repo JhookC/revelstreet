@@ -19,7 +19,9 @@
   "dependencies": {
     "@heroui/react": "^3.0.3",
     "@heroui/styles": "^3.0.3",
+    "@tanstack/query-sync-storage-persister": "^5.100.5",
     "@tanstack/react-query": "^5.100.5",
+    "@tanstack/react-query-persist-client": "^5.100.5",
     "@tanstack/react-router": "^1.168.24",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
