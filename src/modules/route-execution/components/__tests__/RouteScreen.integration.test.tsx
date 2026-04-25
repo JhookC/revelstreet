@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouteScreen } from '../RouteScreen';
@@ -25,6 +25,22 @@ function setup() {
   );
   return { user };
 }
+
+describe('RouteScreen — error state', () => {
+  it('shows "Route not found" when routeId does not exist', async () => {
+    const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <QueryClientProvider client={qc}>
+        <ThemeProvider>
+          <RouteScreen routeId="unknown-route-id" />
+        </ThemeProvider>
+      </QueryClientProvider>,
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Route not found')).toBeInTheDocument();
+    });
+  });
+});
 
 describe('RouteScreen — happy path', () => {
   it('renders all stop labels on load', () => {
