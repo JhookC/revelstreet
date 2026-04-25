@@ -8,9 +8,10 @@ import {
   useState,
   type ReactNode,
 } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import type { FailureReason, Route, Stop, StopStatus } from '../types';
 import { ALLOWED_TRANSITIONS, FINAL_STATUSES } from '../types';
-import { usePersistedRoute } from '../hooks/usePersistedRoute';
+import { useMarkStatusMutation, useRouteQuery, routeKeys } from '../api';
 
 interface ActionSnapshot {
   stopId: string;
@@ -22,14 +23,11 @@ interface ActionSnapshot {
 
 interface RouteContextValue {
   route: Route;
+  isLoading: boolean;
   activeStopId: string | null;
   completedCount: number;
   totalCount: number;
-  markStatus: (
-    stopId: string,
-    next: StopStatus,
-    reason?: FailureReason,
-  ) => void;
+  markStatus: (stopId: string, next: StopStatus, reason?: FailureReason) => void;
   lastAction: ActionSnapshot | null;
   undo: () => void;
   dismissUndo: () => void;
@@ -50,43 +48,41 @@ const IS_DEV: boolean = (() => {
   }
 })();
 
+const EMPTY_ROUTE: Route = { id: '', operatorId: '', stops: [] };
+
 interface RouteProviderProps {
   children: ReactNode;
-  initialRoute: Route;
+  routeId: string;
 }
 
-export function RouteProvider({ children, initialRoute }: RouteProviderProps) {
-  const [route, setRoute] = usePersistedRoute(initialRoute);
+export function RouteProvider({ children, routeId }: RouteProviderProps) {
+  const queryClient = useQueryClient();
+  const { data: route, isLoading } = useRouteQuery(routeId);
+  const markMutation = useMarkStatusMutation(routeId);
   const [lastAction, setLastAction] = useState<ActionSnapshot | null>(null);
   const lastActionRef = useRef<ActionSnapshot | null>(null);
-  const routeRef = useRef<Route>(route);
 
   useEffect(() => {
     lastActionRef.current = lastAction;
   }, [lastAction]);
 
-  useEffect(() => {
-    routeRef.current = route;
-  }, [route]);
-
   const activeStopId = useMemo(() => {
+    if (!route) return null;
     const sorted = [...route.stops].sort((a, b) => a.order - b.order);
     const next = sorted.find((s) => !FINAL_STATUSES.has(s.status));
     return next ? next.id : null;
-  }, [route.stops]);
+  }, [route]);
 
   const completedCount = useMemo(
-    () => route.stops.filter((s) => FINAL_STATUSES.has(s.status)).length,
-    [route.stops],
+    () => route?.stops.filter((s) => FINAL_STATUSES.has(s.status)).length ?? 0,
+    [route],
   );
-  const totalCount = route.stops.length;
+  const totalCount = route?.stops.length ?? 0;
 
   const markStatus = useCallback(
     (stopId: string, next: StopStatus, reason?: FailureReason) => {
-      // Read the target stop synchronously from the ref BEFORE calling setRoute.
-      // State updaters run asynchronously in concurrent mode, so any assignment
-      // inside the updater closure would be invisible to the outer function.
-      const target = routeRef.current.stops.find((s) => s.id === stopId);
+      const current = queryClient.getQueryData<Route>(routeKeys.byId(routeId));
+      const target = current?.stops.find((s) => s.id === stopId);
       if (!target) return;
 
       if (!ALLOWED_TRANSITIONS[target.status].has(next)) {
@@ -107,19 +103,14 @@ export function RouteProvider({ children, initialRoute }: RouteProviderProps) {
         nextStatus: next,
       };
 
-      setRoute((prev) => {
-        const t = prev.stops.find((s) => s.id === stopId);
-        if (!t) return prev;
-
-        // Defensive guard: re-validate transition in case state changed between
-        // the ref read above and this updater running.
-        if (!ALLOWED_TRANSITIONS[t.status].has(next)) return prev;
-
+      // Optimistic cache update — immediate UI response
+      queryClient.setQueryData<Route>(routeKeys.byId(routeId), (prev) => {
+        if (!prev) return prev;
         const updated: Stop = {
-          ...t,
+          ...target,
           status: next,
           failureReason: next === 'failed' ? reason : undefined,
-          history: [...t.history, { at: Date.now(), status: next }],
+          history: [...target.history, { at: Date.now(), status: next }],
         };
         return {
           ...prev,
@@ -128,18 +119,22 @@ export function RouteProvider({ children, initialRoute }: RouteProviderProps) {
       });
 
       setLastAction(snapshot);
+
+      // Background persist to server (MSW for now, real API later)
+      markMutation.mutate({ stopId, status: next, reason });
     },
-    [setRoute],
+    [queryClient, routeId, markMutation],
   );
 
   const undo = useCallback(() => {
     const snap = lastActionRef.current;
     if (!snap) return;
 
-    setRoute((prev) => {
+    queryClient.setQueryData<Route>(routeKeys.byId(routeId), (prev) => {
+      if (!prev) return prev;
       const target = prev.stops.find((s) => s.id === snap.stopId);
       if (!target) return prev;
-      const updated: Stop = {
+      const restored: Stop = {
         ...target,
         status: snap.prevStatus,
         failureReason: snap.prevReason,
@@ -147,11 +142,11 @@ export function RouteProvider({ children, initialRoute }: RouteProviderProps) {
       };
       return {
         ...prev,
-        stops: prev.stops.map((s) => (s.id === snap.stopId ? updated : s)),
+        stops: prev.stops.map((s) => (s.id === snap.stopId ? restored : s)),
       };
     });
     setLastAction(null);
-  }, [setRoute]);
+  }, [queryClient, routeId]);
 
   const dismissUndo = useCallback(() => setLastAction(null), []);
 
@@ -163,7 +158,8 @@ export function RouteProvider({ children, initialRoute }: RouteProviderProps) {
 
   const value = useMemo<RouteContextValue>(
     () => ({
-      route,
+      route: route ?? EMPTY_ROUTE,
+      isLoading,
       activeStopId,
       completedCount,
       totalCount,
@@ -174,6 +170,7 @@ export function RouteProvider({ children, initialRoute }: RouteProviderProps) {
     }),
     [
       route,
+      isLoading,
       activeStopId,
       completedCount,
       totalCount,

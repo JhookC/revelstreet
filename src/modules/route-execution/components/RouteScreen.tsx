@@ -1,12 +1,12 @@
 import { useCallback } from 'react';
-import { MOCK_ROUTE } from '@/mock/route';
-import { RouteProvider } from '../context/RouteContext';
-import { useRoute } from '../context/RouteContext';
+import { RouteProvider, useRoute } from '../context/RouteContext';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
-import type { Route, StopStatus } from '../types';
+import type { StopStatus } from '../types';
 import { ProgressHeader } from './ProgressHeader';
 import { StopList } from './StopList';
 import { UndoToast } from './UndoToast';
+
+const ROUTE_ID = 'route-001';
 
 function KeyboardController() {
   const { activeStopId, markStatus } = useRoute();
@@ -24,21 +24,33 @@ function KeyboardController() {
   return null;
 }
 
-interface Props {
-  initialRoute?: Route;
+function RouteScreenBody() {
+  const { isLoading } = useRoute();
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center text-[var(--color-content-muted)]">
+        Loading route…
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-full">
+      <ProgressHeader />
+      <main className="pb-32">
+        <StopList />
+      </main>
+      <UndoToast />
+    </div>
+  );
 }
 
-export function RouteScreen({ initialRoute = MOCK_ROUTE }: Props) {
+export function RouteScreen() {
   return (
-    <RouteProvider initialRoute={initialRoute}>
+    <RouteProvider routeId={ROUTE_ID}>
       <KeyboardController />
-      <div className="min-h-full">
-        <ProgressHeader />
-        <main className="pb-32">
-          <StopList />
-        </main>
-        <UndoToast />
-      </div>
+      <RouteScreenBody />
     </RouteProvider>
   );
 }

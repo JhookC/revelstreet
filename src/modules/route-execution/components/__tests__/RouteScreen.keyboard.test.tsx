@@ -1,15 +1,27 @@
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { render } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouteScreen } from '../RouteScreen';
 import { ThemeProvider } from '@/shared/context/ThemeContext';
+import { routeKeys } from '@/modules/route-execution';
+import { MOCK_ROUTE } from '@/mock/route';
+
+function makeQueryClient() {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false, staleTime: Infinity } },
+  });
+  client.setQueryData(routeKeys.byId(MOCK_ROUTE.id), MOCK_ROUTE);
+  return client;
+}
 
 function setup() {
   const user = userEvent.setup();
   render(
-    <ThemeProvider>
-      <RouteScreen />
-    </ThemeProvider>,
+    <QueryClientProvider client={makeQueryClient()}>
+      <ThemeProvider>
+        <RouteScreen />
+      </ThemeProvider>
+    </QueryClientProvider>,
   );
   return { user };
 }
@@ -25,7 +37,6 @@ describe('RouteScreen — keyboard shortcuts', () => {
     const { user } = setup();
     await user.keyboard('a');
     await user.keyboard('d');
-    // departed → shows success/fail buttons
     expect(screen.getByRole('button', { name: /picked up/i })).toBeInTheDocument();
   });
 
@@ -39,14 +50,12 @@ describe('RouteScreen — keyboard shortcuts', () => {
 
   it('shortcut does nothing when no active stop', async () => {
     const { user } = setup();
-    // complete all 5 stops via keyboard
     for (let i = 0; i < 5; i++) {
       await user.keyboard('a');
       await user.keyboard('d');
       await user.keyboard('s');
     }
     expect(screen.getByText('5 / 5 complete')).toBeInTheDocument();
-    // pressing A again should be a no-op
     await user.keyboard('a');
     expect(screen.getByText('5 / 5 complete')).toBeInTheDocument();
   });

@@ -17,6 +17,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.100.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
@@ -43,6 +44,7 @@
     "husky": "^9.1.7",
     "jsdom": "^29.0.2",
     "lint-staged": "^16.4.0",
+    "msw": "^2.13.6",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.59.0",
@@ -52,5 +54,10 @@
   "packageManager": "pnpm@9.15.0",
   "lint-staged": {
     "src/**/*.{ts,tsx}": "eslint --fix"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }

@@ -1,14 +1,27 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouteScreen } from '../RouteScreen';
 import { ThemeProvider } from '@/shared/context/ThemeContext';
+import { routeKeys } from '@/modules/route-execution';
+import { MOCK_ROUTE } from '@/mock/route';
+
+function makeQueryClient() {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false, staleTime: Infinity } },
+  });
+  client.setQueryData(routeKeys.byId(MOCK_ROUTE.id), MOCK_ROUTE);
+  return client;
+}
 
 function setup() {
   const user = userEvent.setup();
   render(
-    <ThemeProvider>
-      <RouteScreen />
-    </ThemeProvider>,
+    <QueryClientProvider client={makeQueryClient()}>
+      <ThemeProvider>
+        <RouteScreen />
+      </ThemeProvider>
+    </QueryClientProvider>,
   );
   return { user };
 }
@@ -16,8 +29,6 @@ function setup() {
 describe('RouteScreen — happy path', () => {
   it('renders all stop labels on load', () => {
     setup();
-    // Stop labels appear in <h3> cards; use heading role to disambiguate from
-    // the "Next: <stop>" span in the progress header.
     expect(screen.getByRole('heading', { name: 'Sunset Tacos', level: 3 })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Marina Sushi', level: 3 })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Apt 3B — Patel', level: 3 })).toBeInTheDocument();

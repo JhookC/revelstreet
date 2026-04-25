@@ -1,4 +1,6 @@
 import '@testing-library/jest-dom/vitest';
+import { server } from '@/mocks/server';
+import { resetStore } from '@/mocks/handlers';
 
 // jsdom doesn't implement scrollIntoView; stub it so auto-scroll hooks don't throw.
 Element.prototype.scrollIntoView = vi.fn();
@@ -18,6 +20,10 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
+beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
 afterEach(() => {
+  server.resetHandlers();
+  resetStore();
   localStorage.clear();
 });
+afterAll(() => server.close());
