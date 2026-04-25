@@ -1,10 +1,10 @@
+import { Button, ProgressBar } from '@heroui/react';
 import { useRoute } from '../context/RouteContext';
 import { useTheme } from '@/shared/context/ThemeContext';
 
 export function ProgressHeader() {
   const { completedCount, totalCount, activeStopId, route } = useRoute();
   const { theme, toggleTheme } = useTheme();
-  const pct = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
   const activeStop = route.stops.find((s) => s.id === activeStopId);
 
   return (
@@ -18,27 +18,27 @@ export function ProgressHeader() {
             <span className="text-sm tabular-nums text-[var(--color-content-muted)]">
               {completedCount} / {totalCount} complete
             </span>
-            <button
-              type="button"
-              onClick={toggleTheme}
+            <Button
+              isIconOnly
+              variant="ghost"
+              size="sm"
+              onPress={toggleTheme}
               aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              className="inline-flex size-8 items-center justify-center rounded-full text-base text-[var(--color-content-muted)] transition hover:bg-[var(--color-surface-sunken)] hover:text-[var(--color-content)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {theme === 'dark' ? '☀' : '☾'}
-            </button>
+            </Button>
           </div>
         </div>
-        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--color-surface-sunken)]">
-          <div
-            className="h-full rounded-full bg-status-success transition-all duration-300 ease-out"
-            style={{ width: `${pct}%` }}
-            role="progressbar"
-            aria-valuemin={0}
-            aria-valuemax={totalCount}
-            aria-valuenow={completedCount}
-            aria-label="Route progress"
-          />
-        </div>
+        <ProgressBar
+          aria-label="Route progress"
+          value={completedCount}
+          maxValue={totalCount}
+          className="mt-2 w-full"
+        >
+          <ProgressBar.Track className="h-2 overflow-hidden rounded-full bg-[var(--color-surface-sunken)]">
+            <ProgressBar.Fill className="h-full rounded-full bg-status-success transition-all duration-300 ease-out" />
+          </ProgressBar.Track>
+        </ProgressBar>
         {activeStop ? (
           <p className="mt-2 text-xs text-[var(--color-content-soft)]">
             Next:{' '}

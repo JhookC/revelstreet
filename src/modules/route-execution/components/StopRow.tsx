@@ -1,4 +1,5 @@
 import { useEffect, useState, type Ref } from 'react';
+import { Button } from '@heroui/react';
 import type { Stop, StopStatus } from '../types';
 import { useRoute } from '../context/RouteContext';
 import { StatusPill } from './StatusPill';
@@ -20,11 +21,6 @@ const capitalize = (s: string) =>
 const formatReason = (r: string) =>
   r.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
-const baseBtn =
-  'inline-flex min-h-[48px] items-center justify-center rounded-2xl px-5 py-3 text-base font-semibold transition active:scale-[0.99] disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2';
-const primaryBtn = `${baseBtn} bg-accent text-white hover:bg-accent-strong focus-visible:outline-accent`;
-const successBtn = `${baseBtn} bg-status-success text-white hover:brightness-110 focus-visible:outline-status-success`;
-const dangerBtn = `${baseBtn} bg-status-failed/10 text-status-failed ring-1 ring-inset ring-status-failed/30 hover:bg-status-failed/15 focus-visible:outline-status-failed`;
 
 export function StopRow({ stop, isActive, isLocked, ref }: Props) {
   const { markStatus } = useRoute();
@@ -91,39 +87,32 @@ export function StopRow({ stop, isActive, isLocked, ref }: Props) {
           {isActive && (
             <div className="mt-4 flex flex-wrap gap-2">
               {stop.status === 'pending' && (
-                <button
-                  type="button"
-                  onClick={handle('arrived')}
-                  className={primaryBtn}
-                >
+                <Button size="lg" onPress={handle('arrived')}>
                   Mark Arrived
-                </button>
+                </Button>
               )}
               {stop.status === 'arrived' && (
-                <button
-                  type="button"
-                  onClick={handle('departed')}
-                  className={primaryBtn}
-                >
+                <Button size="lg" onPress={handle('departed')}>
                   Mark Departed
-                </button>
+                </Button>
               )}
               {stop.status === 'departed' && (
                 <>
-                  <button
-                    type="button"
-                    onClick={handle('success')}
-                    className={successBtn}
+                  <Button
+                    size="lg"
+                    className="bg-status-success text-white hover:brightness-110"
+                    onPress={handle('success')}
                   >
                     {stop.type === 'pickup' ? 'Picked up' : 'Delivered'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setPickerOpen(true)}
-                    className={dangerBtn}
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="ghost"
+                    className="bg-status-failed/10 text-status-failed ring-1 ring-inset ring-status-failed/30 hover:bg-status-failed/15"
+                    onPress={() => setPickerOpen(true)}
                   >
                     Failed…
-                  </button>
+                  </Button>
                 </>
               )}
             </div>

@@ -17,7 +17,9 @@ describe('ProgressHeader', () => {
 
   it('progress bar starts at 0%', () => {
     renderWithRoute(<ProgressHeader />);
-    expect(screen.getByRole('progressbar')).toHaveStyle({ width: '0%' });
+    const bar = screen.getByRole('progressbar');
+    expect(bar).toHaveAttribute('aria-valuenow', '0');
+    expect(bar).toHaveAttribute('aria-valuemax', '5');
   });
 
   it('shows "Route complete" when all stops are final', () => {
