@@ -29,7 +29,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(resolveInitialTheme);
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
+    const root = document.documentElement;
+    // Our CSS tokens use data-theme; HeroUI v3 uses class="light|dark"
+    root.dataset.theme = theme;
+    root.classList.remove('light', 'dark');
+    root.classList.add(theme);
     localStorage.setItem(STORAGE_KEY, theme);
   }, [theme]);
 

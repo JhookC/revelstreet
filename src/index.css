@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '@heroui/styles';
 
 @theme {
   --color-surface: oklch(98% 0.005 250);
