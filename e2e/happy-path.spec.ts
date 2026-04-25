@@ -1,16 +1,14 @@
 import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/');
-  // Clear persisted state so each test starts fresh
+  await page.goto('/routes/route-001');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
+  await page.waitForLoadState('networkidle');
 });
 
 test('renders the route screen with all stops', async ({ page }) => {
   await expect(page.getByText('0 / 5 complete')).toBeVisible();
-  // Stop labels appear in <h3> cards; use heading role to avoid strict-mode
-  // ambiguity with the "Next: <stop>" span in the progress header.
   await expect(page.getByRole('heading', { name: 'Sunset Tacos', level: 3 })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Marina Sushi', level: 3 })).toBeVisible();
 });
