@@ -54,4 +54,15 @@ describe('FleetScreen', () => {
     await renderFleet([]);
     expect(screen.getByText('No routes assigned.')).toBeInTheDocument();
   });
+
+  it('sorts routes so in-progress appears before not-started', async () => {
+    await renderFleet(MOCK_FLEET); // order: not-started, in-progress, not-started
+    const cards = screen.getAllByRole('link'); // RouteCard renders a Link
+    // route-002 (in-progress) should come before route-001 and route-003 (not-started)
+    const positions = ['op-echo-3', 'op-fox-7', 'op-victor-2'].map((op) =>
+      cards.findIndex((c) => c.textContent?.includes(op)),
+    );
+    expect(positions[0]).toBeLessThan(positions[1]);
+    expect(positions[0]).toBeLessThan(positions[2]);
+  });
 });
