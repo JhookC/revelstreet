@@ -41,4 +41,15 @@ describe('FailureReasonSheet', () => {
     await user.click(screen.getByText('Wrong address'));
     expect(onPick).toHaveBeenCalledWith('wrong-address');
   });
+
+  it('does not render the dialog when closed', () => {
+    setup(false);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('calls onClose when the Cancel button is clicked', async () => {
+    const { onClose, user } = setup(true);
+    await user.click(screen.getByRole('button', { name: /cancel/i }));
+    expect(onClose).toHaveBeenCalledOnce();
+  });
 });
