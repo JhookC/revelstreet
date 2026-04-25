@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
+import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 
 async function enableMocking() {
   if (import.meta.env.PROD) return;
@@ -15,7 +16,9 @@ if (!rootEl) throw new Error('Root element #root not found');
 void enableMocking().then(() => {
   createRoot(rootEl).render(
     <StrictMode>
-      <App />
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
     </StrictMode>,
   );
 });

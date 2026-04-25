@@ -26,7 +26,7 @@ export function FailureReasonSheet({ open, onPick, onClose }: Props) {
         <Modal.Dialog className="rounded-t-3xl sm:rounded-3xl">
           <Modal.Header>
             <Modal.Heading>Why did this fail?</Modal.Heading>
-            <p className="mt-1 text-sm text-[var(--color-content-muted)]">
+            <p className="mt-1 text-sm text-content-muted">
               {"Pick the closest reason. We'll log it for follow-up."}
             </p>
           </Modal.Header>
@@ -37,12 +37,12 @@ export function FailureReasonSheet({ open, onPick, onClose }: Props) {
                   key={r.id}
                   type="button"
                   onClick={() => onPick(r.id)}
-                  className="flex min-h-[64px] flex-col items-start rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-sunken)] px-4 py-3 text-left transition hover:border-status-failed hover:bg-status-failed/5 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-status-failed"
+                  className="flex min-h-[64px] flex-col items-start rounded-2xl border border-border bg-surface-sunken px-4 py-3 text-left transition hover:border-status-failed hover:bg-status-failed/5 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-status-failed"
                 >
-                  <span className="text-base font-semibold text-[var(--color-content)]">
+                  <span className="text-base font-semibold text-content">
                     {r.label}
                   </span>
-                  <span className="mt-0.5 text-sm text-[var(--color-content-muted)]">
+                  <span className="mt-0.5 text-sm text-content-muted">
                     {r.hint}
                   </span>
                 </button>

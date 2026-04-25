@@ -26,6 +26,7 @@ interface RouteContextValue {
   isLoading: boolean;
   isError: boolean;
   activeStopId: string | null;
+  activeStop: Stop | null;
   completedCount: number;
   totalCount: number;
   markStatus: (stopId: string, next: StopStatus, reason?: FailureReason) => void;
@@ -67,12 +68,12 @@ export function RouteProvider({ children, routeId }: RouteProviderProps) {
     lastActionRef.current = lastAction;
   }, [lastAction]);
 
-  const activeStopId = useMemo(() => {
+  const activeStop = useMemo<Stop | null>(() => {
     if (!route) return null;
     const sorted = [...route.stops].sort((a, b) => a.order - b.order);
-    const next = sorted.find((s) => !FINAL_STATUSES.has(s.status));
-    return next ? next.id : null;
+    return sorted.find((s) => !FINAL_STATUSES.has(s.status)) ?? null;
   }, [route]);
+  const activeStopId = activeStop?.id ?? null;
 
   const completedCount = useMemo(
     () => route?.stops.filter((s) => FINAL_STATUSES.has(s.status)).length ?? 0,
@@ -163,6 +164,7 @@ export function RouteProvider({ children, routeId }: RouteProviderProps) {
       isLoading,
       isError,
       activeStopId,
+      activeStop,
       completedCount,
       totalCount,
       markStatus,
@@ -175,6 +177,7 @@ export function RouteProvider({ children, routeId }: RouteProviderProps) {
       isLoading,
       isError,
       activeStopId,
+      activeStop,
       completedCount,
       totalCount,
       markStatus,

@@ -12,6 +12,14 @@ const styles: Record<StopStatus, string> = {
   failed: 'bg-status-failed/15 text-status-failed ring-status-failed/40',
 };
 
+const glyphs: Record<StopStatus, string> = {
+  pending: '○',
+  arrived: '↓',
+  departed: '→',
+  success: '✓',
+  failed: '✕',
+};
+
 const labelFor = (status: StopStatus, stopType?: StopType): string => {
   switch (status) {
     case 'pending':
@@ -37,7 +45,7 @@ export function StatusPill({ status, stopType }: Props) {
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ring-1 ring-inset whitespace-nowrap ${styles[status]}`}
     >
-      <span className="size-1.5 rounded-full bg-current" />
+      <span aria-hidden>{glyphs[status]}</span>
       {labelFor(status, stopType)}
     </span>
   );

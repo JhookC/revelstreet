@@ -31,7 +31,7 @@ export function UndoToast() {
       aria-atomic="true"
       className="pointer-events-none fixed inset-x-0 bottom-4 z-40 flex justify-center px-4"
     >
-      <div className="pointer-events-auto flex w-full max-w-md items-center justify-between gap-3 rounded-2xl bg-[var(--color-content)] px-4 py-2 text-[var(--color-surface)] shadow-xl">
+      <div className="pointer-events-auto flex w-full max-w-md items-center justify-between gap-3 rounded-2xl bg-content px-4 py-2 text-surface shadow-xl">
         <span className="truncate text-sm">
           Marked <strong className="font-semibold">{stop.label}</strong> as {verb}
         </span>

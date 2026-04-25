@@ -15,9 +15,6 @@ interface Props {
 const formatTime = (ts: number) =>
   new Date(ts).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
-const capitalize = (s: string) =>
-  s.charAt(0).toUpperCase() + s.slice(1);
-
 const formatReason = (r: FailureReason) =>
   r.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 
@@ -90,10 +87,10 @@ export function StopRow({ stop, isActive, isLocked, ref }: Props) {
     <li
       ref={ref}
       className={[
-        'rounded-3xl border bg-[var(--color-surface-raised)] p-5 shadow-sm transition',
+        'rounded-3xl border bg-surface-raised p-5 shadow-sm transition',
         isActive
           ? 'border-accent ring-2 ring-accent/30'
-          : 'border-[var(--color-border)]',
+          : 'border-border',
         isLocked ? 'opacity-50' : '',
       ].join(' ')}
       aria-current={isActive ? 'step' : undefined}
@@ -112,18 +109,18 @@ export function StopRow({ stop, isActive, isLocked, ref }: Props) {
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-3">
-            <h3 className="truncate text-lg font-semibold text-[var(--color-content)]">
+            <h3 className="truncate text-lg font-semibold text-content">
               {stop.label}
             </h3>
             <StatusPill status={stop.status} stopType={stop.type} />
           </div>
-          <p className="mt-1 truncate text-sm text-[var(--color-content-muted)]">
+          <p className="mt-1 truncate text-sm text-content-muted">
             {stop.address}
           </p>
 
           {lastEntry && (
-            <p className="mt-2 text-xs text-[var(--color-content-soft)]">
-              {capitalize(lastEntry.status)} at {formatTime(lastEntry.at)}
+            <p className="mt-2 text-xs text-content-soft">
+              {lastEntry.status.charAt(0).toUpperCase() + lastEntry.status.slice(1)} at {formatTime(lastEntry.at)}
               {stop.failureReason
                 ? ` • Reason: ${formatReason(stop.failureReason)}`
                 : ''}

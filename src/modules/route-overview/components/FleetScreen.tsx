@@ -29,10 +29,10 @@ export function FleetScreen() {
   );
 
   return (
-    <div className="min-h-full bg-[var(--color-surface)]">
-      <header className="sticky top-0 z-30 border-b border-[var(--color-border)] bg-[var(--color-surface)]/90 backdrop-blur">
+    <div className="min-h-dvh bg-surface">
+      <header className="sticky top-0 z-30 border-b border-border bg-surface/90 backdrop-blur">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
-          <h1 className="text-base font-semibold text-[var(--color-content)]">Fleet Overview</h1>
+          <h1 className="text-base font-semibold text-content">Fleet Overview</h1>
           <Button
             isIconOnly
             variant="ghost"
@@ -47,7 +47,7 @@ export function FleetScreen() {
 
       <main className="mx-auto max-w-2xl px-5 pb-16 pt-6">
         {isLoading && (
-          <div className="flex min-h-[40vh] items-center justify-center text-[var(--color-content-muted)]">
+          <div className="flex min-h-[40vh] items-center justify-center text-content-muted">
             Loading fleet…
           </div>
         )}
@@ -59,7 +59,7 @@ export function FleetScreen() {
         )}
 
         {sortedFleet?.length === 0 && (
-          <div className="flex min-h-[40vh] items-center justify-center text-[var(--color-content-muted)]">
+          <div className="flex min-h-[40vh] items-center justify-center text-content-muted">
             No routes assigned.
           </div>
         )}

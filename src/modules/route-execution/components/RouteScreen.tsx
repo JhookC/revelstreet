@@ -31,7 +31,7 @@ function RouteScreenBody({ onBack }: BodyProps) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[50vh] items-center justify-center text-[var(--color-content-muted)]">
+      <div className="flex min-h-[50vh] items-center justify-center text-content-muted">
         Loading route…
       </div>
     );
@@ -40,12 +40,12 @@ function RouteScreenBody({ onBack }: BodyProps) {
   if (isError) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-center">
-        <p className="text-base font-semibold text-[var(--color-content)]">Route not found</p>
+        <p className="text-base font-semibold text-content">Route not found</p>
         {onBack && (
           <button
             type="button"
             onClick={onBack}
-            className="text-sm text-[var(--color-content-muted)] underline hover:text-[var(--color-content)]"
+            className="text-sm text-content-muted underline hover:text-content"
           >
             ← Back to fleet
           </button>
@@ -55,9 +55,10 @@ function RouteScreenBody({ onBack }: BodyProps) {
   }
 
   return (
-    <div className="min-h-full">
+    <div className="min-h-dvh">
       <ProgressHeader onBack={onBack} />
-      <main className="pb-32">
+      {/* padding clears the fixed UndoToast (≈56px tall + 16px offset + buffer) */}
+      <main className="pb-24">
         <StopList />
       </main>
       <UndoToast />

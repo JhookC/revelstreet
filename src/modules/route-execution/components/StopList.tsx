@@ -96,10 +96,10 @@ function SectionHeader({ title, stops }: { title: string; stops: Stop[] }) {
   const allDone = done === total;
   return (
     <header className="flex items-center justify-between">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--color-content-muted)]">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-content-muted">
         {title}
       </h2>
-      <span className="text-xs text-[var(--color-content-soft)]">
+      <span className="text-xs text-content-soft">
         {done} / {total}
         {allDone ? ' • complete' : ''}
       </span>
