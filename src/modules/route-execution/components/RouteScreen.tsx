@@ -6,8 +6,6 @@ import { ProgressHeader } from './ProgressHeader';
 import { StopList } from './StopList';
 import { UndoToast } from './UndoToast';
 
-const ROUTE_ID = 'route-001';
-
 function KeyboardController() {
   const { activeStopId, markStatus } = useRoute();
 
@@ -46,9 +44,13 @@ function RouteScreenBody() {
   );
 }
 
-export function RouteScreen() {
+interface Props {
+  routeId: string;
+}
+
+export function RouteScreen({ routeId }: Props) {
   return (
-    <RouteProvider routeId={ROUTE_ID}>
+    <RouteProvider routeId={routeId}>
       <KeyboardController />
       <RouteScreenBody />
     </RouteProvider>

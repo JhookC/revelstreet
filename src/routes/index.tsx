@@ -1,5 +1,6 @@
-import { RouteScreen } from '@/modules/route-execution';
+import { RouterProvider } from '@tanstack/react-router';
+import { router } from './router';
 
 export default function Routes() {
-  return <RouteScreen />;
+  return <RouterProvider router={router} />;
 }

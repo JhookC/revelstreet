@@ -19,7 +19,7 @@ function setup() {
   render(
     <QueryClientProvider client={makeQueryClient()}>
       <ThemeProvider>
-        <RouteScreen />
+        <RouteScreen routeId={MOCK_ROUTE.id} />
       </ThemeProvider>
     </QueryClientProvider>,
   );
