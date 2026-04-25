@@ -39,16 +39,7 @@ const RouteContext = createContext<RouteContextValue | null>(null);
 
 const UNDO_TIMEOUT_MS = 5000;
 
-// Vite injects import.meta.env at build time; access defensively without
-// requiring a vite-env.d.ts here.
-const IS_DEV: boolean = (() => {
-  try {
-    const meta = import.meta as unknown as { env?: { DEV?: boolean } };
-    return meta.env?.DEV === true;
-  } catch {
-    return false;
-  }
-})();
+const IS_DEV = import.meta.env.DEV;
 
 const EMPTY_ROUTE: Route = { id: '', operatorId: '', stops: [] };
 
