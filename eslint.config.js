@@ -69,9 +69,12 @@ export default tseslint.config(
     },
   },
 
-  // Config files (ESLint itself, vite.config.ts) — no browser globals, no project type-checking
+  // Config files at the repo root — no browser globals, no TS project type-checking.
+  // disableTypeChecked turns off every rule that requires type information so that
+  // vite.config.ts, playwright.config.ts, vitest.config.ts, etc. don't error.
   {
     files: ['*.config.{js,ts}', '*.config.*.{js,ts}'],
+    extends: [tseslint.configs.disableTypeChecked],
     languageOptions: {
       globals: globals.node,
     },
