@@ -48,6 +48,14 @@ describe('RouteScreen — keyboard shortcuts', () => {
     expect(screen.getByText('1 / 5 complete')).toBeInTheDocument();
   });
 
+  it('A D F marks the first stop as failed and counts toward complete', async () => {
+    const { user } = setup();
+    await user.keyboard('a');
+    await user.keyboard('d');
+    await user.keyboard('f');
+    expect(screen.getByText('1 / 5 complete')).toBeInTheDocument();
+  });
+
   it('shortcut does nothing when no active stop', async () => {
     const { user } = setup();
     for (let i = 0; i < 5; i++) {

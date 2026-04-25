@@ -5,6 +5,12 @@ import { MOCK_ROUTE } from '@/mock/route';
 import type { Route } from '../../types';
 
 describe('ProgressHeader', () => {
+  it('shows the route operatorId and id as the header title', () => {
+    renderWithRoute(<ProgressHeader />);
+    expect(screen.getByRole('heading', { name: MOCK_ROUTE.operatorId })).toBeInTheDocument();
+    expect(screen.getByText(MOCK_ROUTE.id)).toBeInTheDocument();
+  });
+
   it('shows "0 / 5 complete" for a fresh route', () => {
     renderWithRoute(<ProgressHeader />);
     expect(screen.getByText('0 / 5 complete')).toBeInTheDocument();
