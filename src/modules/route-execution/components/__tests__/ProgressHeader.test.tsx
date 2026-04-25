@@ -1,4 +1,6 @@
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { vi } from 'vitest';
 import { ProgressHeader } from '../ProgressHeader';
 import { renderWithRoute } from '@/test/utils';
 import { MOCK_ROUTE } from '@/mock/route';
@@ -46,5 +48,26 @@ describe('ProgressHeader', () => {
     };
     renderWithRoute(<ProgressHeader />, { initialRoute: partialRoute });
     expect(screen.getByText('2 / 5 complete')).toBeInTheDocument();
+  });
+
+  it('shows "No stops assigned" when route has no stops', () => {
+    const emptyRoute: Route = { ...MOCK_ROUTE, stops: [] };
+    renderWithRoute(<ProgressHeader />, { initialRoute: emptyRoute });
+    expect(screen.getByText('No stops assigned')).toBeInTheDocument();
+  });
+
+  it('renders the back button and calls onBack when clicked', async () => {
+    const user = userEvent.setup();
+    const onBack = vi.fn();
+    renderWithRoute(<ProgressHeader onBack={onBack} />);
+    const backBtn = screen.getByRole('button', { name: /back to fleet/i });
+    expect(backBtn).toBeInTheDocument();
+    await user.click(backBtn);
+    expect(onBack).toHaveBeenCalledOnce();
+  });
+
+  it('does not render the back button when onBack is not provided', () => {
+    renderWithRoute(<ProgressHeader />);
+    expect(screen.queryByRole('button', { name: /back to fleet/i })).not.toBeInTheDocument();
   });
 });

@@ -45,4 +45,17 @@ describe('RouteCard', () => {
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute('href', '/routes/route-001');
   });
+
+  it('shows "Next:" with the first pending stop label for a not-started route', async () => {
+    await renderWithRouter(<RouteCard route={route001} />);
+    expect(screen.getByText(/next:/i)).toBeInTheDocument();
+    expect(screen.getByText('Sunset Tacos')).toBeInTheDocument();
+  });
+
+  it('shows "At:" with the arrived/departed stop label for in-progress route', async () => {
+    await renderWithRouter(<RouteCard route={route002} />);
+    // route-002 has stop s2-3 with status 'arrived'
+    expect(screen.getByText(/at:/i)).toBeInTheDocument();
+    expect(screen.getByText('Suite 202 — Lee')).toBeInTheDocument();
+  });
 });

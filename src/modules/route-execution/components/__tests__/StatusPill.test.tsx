@@ -14,4 +14,15 @@ describe('StatusPill', () => {
     render(<StatusPill status={status} stopType={stopType} />);
     expect(screen.getByText(expected)).toBeInTheDocument();
   });
+
+  it.each<[StopStatus, string]>([
+    ['pending', '○'],
+    ['arrived', '↓'],
+    ['departed', '→'],
+    ['success', '✓'],
+    ['failed', '✕'],
+  ])('renders the "%s" glyph for status=%s', (status, glyph) => {
+    render(<StatusPill status={status} />);
+    expect(screen.getByText(glyph)).toBeInTheDocument();
+  });
 });

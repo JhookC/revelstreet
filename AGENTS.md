@@ -74,7 +74,7 @@ src/
 
 ### Components
 
-- Functional components only — no class components.
+- Functional components only — no class components. Exception: `ErrorBoundary` in `shared/components/` must be a class component because React does not yet support error boundary hooks.
 - Export named, not default (except route entry points in `src/routes/`).
 - Prop types as `interface Props` in the same file; no prop-types package.
 - No inline styles — use Tailwind utility classes or CSS custom properties.
