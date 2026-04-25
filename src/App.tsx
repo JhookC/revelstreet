@@ -1,5 +1,10 @@
 import Routes from '@/routes';
+import { ThemeProvider } from '@/shared/context/ThemeContext';
 
 export default function App() {
-  return <Routes />;
+  return (
+    <ThemeProvider>
+      <Routes />
+    </ThemeProvider>
+  );
 }

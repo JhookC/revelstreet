@@ -1,7 +1,9 @@
 import { useRoute } from '../context/RouteContext';
+import { useTheme } from '@/shared/context/ThemeContext';
 
 export function ProgressHeader() {
   const { completedCount, totalCount, activeStopId, route } = useRoute();
+  const { theme, toggleTheme } = useTheme();
   const pct = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
   const activeStop = route.stops.find((s) => s.id === activeStopId);
 
@@ -12,9 +14,19 @@ export function ProgressHeader() {
           <h1 className="text-base font-semibold text-[var(--color-content)]">
             Active route
           </h1>
-          <span className="text-sm tabular-nums text-[var(--color-content-muted)]">
-            {completedCount} / {totalCount} complete
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-sm tabular-nums text-[var(--color-content-muted)]">
+              {completedCount} / {totalCount} complete
+            </span>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              className="inline-flex size-8 items-center justify-center rounded-full text-base text-[var(--color-content-muted)] transition hover:bg-[var(--color-surface-sunken)] hover:text-[var(--color-content)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              {theme === 'dark' ? '☀' : '☾'}
+            </button>
+          </div>
         </div>
         <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-[var(--color-surface-sunken)]">
           <div

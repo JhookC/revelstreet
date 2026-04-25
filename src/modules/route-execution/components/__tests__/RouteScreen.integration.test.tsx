@@ -1,10 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { RouteScreen } from '../RouteScreen';
+import { ThemeProvider } from '@/shared/context/ThemeContext';
 
 function setup() {
   const user = userEvent.setup();
-  render(<RouteScreen />);
+  render(
+    <ThemeProvider>
+      <RouteScreen />
+    </ThemeProvider>,
+  );
   return { user };
 }
 
