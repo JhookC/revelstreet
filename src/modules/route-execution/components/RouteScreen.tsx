@@ -22,7 +22,11 @@ function KeyboardController() {
   return null;
 }
 
-function RouteScreenBody() {
+interface BodyProps {
+  onBack?: () => void;
+}
+
+function RouteScreenBody({ onBack }: BodyProps) {
   const { isLoading } = useRoute();
 
   if (isLoading) {
@@ -35,7 +39,7 @@ function RouteScreenBody() {
 
   return (
     <div className="min-h-full">
-      <ProgressHeader />
+      <ProgressHeader onBack={onBack} />
       <main className="pb-32">
         <StopList />
       </main>
@@ -46,13 +50,14 @@ function RouteScreenBody() {
 
 interface Props {
   routeId: string;
+  onBack?: () => void;
 }
 
-export function RouteScreen({ routeId }: Props) {
+export function RouteScreen({ routeId, onBack }: Props) {
   return (
     <RouteProvider routeId={routeId}>
       <KeyboardController />
-      <RouteScreenBody />
+      <RouteScreenBody onBack={onBack} />
     </RouteProvider>
   );
 }

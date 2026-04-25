@@ -1,5 +1,5 @@
 import { createElement } from 'react';
-import { createRouter, createRoute, createRootRoute, Outlet } from '@tanstack/react-router';
+import { createRouter, createRoute, createRootRoute, Outlet, useNavigate } from '@tanstack/react-router';
 import { FleetScreen } from '@/modules/route-overview';
 import { RouteScreen } from '@/modules/route-execution';
 
@@ -18,11 +18,12 @@ const routeDetailRoute = createRoute({
   path: '/routes/$routeId',
   component: function RouteDetailPage() {
     const { routeId } = routeDetailRoute.useParams();
-    return createElement(RouteScreen, { routeId });
+    const navigate = useNavigate();
+    return createElement(RouteScreen, { routeId, onBack: () => void navigate({ to: '/' }) });
   },
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, routeDetailRoute]);
+export const routeTree = rootRoute.addChildren([indexRoute, routeDetailRoute]);
 
 export const router = createRouter({ routeTree });
 

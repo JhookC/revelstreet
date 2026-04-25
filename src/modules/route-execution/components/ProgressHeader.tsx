@@ -2,7 +2,11 @@ import { Button, ProgressBar } from '@heroui/react';
 import { useRoute } from '../context/RouteContext';
 import { useTheme } from '@/shared/context/ThemeContext';
 
-export function ProgressHeader() {
+interface Props {
+  onBack?: () => void;
+}
+
+export function ProgressHeader({ onBack }: Props) {
   const { completedCount, totalCount, activeStopId, route } = useRoute();
   const { theme, toggleTheme } = useTheme();
   const activeStop = route.stops.find((s) => s.id === activeStopId);
@@ -11,9 +15,21 @@ export function ProgressHeader() {
     <header className="sticky top-0 z-30 border-b border-[var(--color-border)] bg-[var(--color-surface)]/90 backdrop-blur">
       <div className="mx-auto max-w-2xl px-5 py-4">
         <div className="flex items-baseline justify-between">
-          <h1 className="text-base font-semibold text-[var(--color-content)]">
-            Active route
-          </h1>
+          <div className="flex items-baseline gap-3">
+            {onBack && (
+              <button
+                type="button"
+                onClick={onBack}
+                className="text-sm text-[var(--color-content-muted)] transition hover:text-[var(--color-content)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                aria-label="Back to fleet"
+              >
+                ← Fleet
+              </button>
+            )}
+            <h1 className="text-base font-semibold text-[var(--color-content)]">
+              Active route
+            </h1>
+          </div>
           <div className="flex items-center gap-3">
             <span className="text-sm tabular-nums text-[var(--color-content-muted)]">
               {completedCount} / {totalCount} complete
