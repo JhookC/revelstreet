@@ -38,3 +38,25 @@ test('route-003 card shows not-started status', async ({ page }) => {
   await expect(card.getByText('Not started')).toBeVisible();
   await expect(card.getByText('0 / 3 stops')).toBeVisible();
 });
+
+test('fleet card updates immediately after completing a stop on the route screen', async ({ page }) => {
+  // Start fresh
+  await page.goto('/routes/route-001');
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  await page.waitForLoadState('networkidle');
+
+  // Complete one stop
+  await page.getByRole('button', { name: /mark arrived/i }).click();
+  await page.getByRole('button', { name: /mark departed/i }).click();
+  await page.getByRole('button', { name: /picked up/i }).first().click();
+
+  // Navigate back to fleet
+  await page.getByRole('button', { name: 'Back to fleet' }).click();
+  await page.waitForLoadState('networkidle');
+
+  // Fleet card should show updated progress immediately (no stale cache)
+  const card = page.locator('li').filter({ hasText: 'op-fox-7' });
+  await expect(card.getByText('1 / 5 stops')).toBeVisible();
+  await expect(card.getByText('In progress')).toBeVisible();
+});

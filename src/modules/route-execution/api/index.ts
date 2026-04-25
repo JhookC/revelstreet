@@ -30,6 +30,11 @@ export function useMarkStatusMutation(routeId: string) {
       }),
     onSuccess: (updated) => {
       queryClient.setQueryData(routeKeys.byId(routeId), updated);
+      // Keep the fleet list in sync without a refetch
+      queryClient.setQueryData<Route[]>(['fleet'], (fleet) => {
+        if (!fleet) return fleet;
+        return fleet.map((r) => (r.id === routeId ? updated : r));
+      });
     },
   });
 }
