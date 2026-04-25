@@ -26,8 +26,9 @@ dist-ssr
 # TypeScript build info
 *.tsbuildinfo
 
-# Exported conversations
+# Exported conversations (except the project chat log)
 *.txt
+!claude-code-chat.txt
 
 # SDD skill reference artifacts
 docs/references/
