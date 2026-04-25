@@ -20,3 +20,13 @@ test('404 page shows for unknown path with back link', async ({ page }) => {
   await expect(page).toHaveURL('/');
   await expect(page.getByText('Fleet Overview')).toBeVisible();
 });
+
+test('unknown routeId shows route-not-found error state', async ({ page }) => {
+  await page.goto('/routes/route-999');
+  await page.waitForLoadState('networkidle');
+
+  await expect(page.getByText('Route not found')).toBeVisible();
+
+  await page.getByRole('button', { name: /back to fleet/i }).click();
+  await expect(page).toHaveURL('/');
+});

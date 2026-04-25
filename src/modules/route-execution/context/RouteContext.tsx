@@ -24,6 +24,7 @@ interface ActionSnapshot {
 interface RouteContextValue {
   route: Route;
   isLoading: boolean;
+  isError: boolean;
   activeStopId: string | null;
   completedCount: number;
   totalCount: number;
@@ -57,7 +58,7 @@ interface RouteProviderProps {
 
 export function RouteProvider({ children, routeId }: RouteProviderProps) {
   const queryClient = useQueryClient();
-  const { data: route, isLoading } = useRouteQuery(routeId);
+  const { data: route, isLoading, isError } = useRouteQuery(routeId);
   const markMutation = useMarkStatusMutation(routeId);
   const [lastAction, setLastAction] = useState<ActionSnapshot | null>(null);
   const lastActionRef = useRef<ActionSnapshot | null>(null);
@@ -160,6 +161,7 @@ export function RouteProvider({ children, routeId }: RouteProviderProps) {
     () => ({
       route: route ?? EMPTY_ROUTE,
       isLoading,
+      isError,
       activeStopId,
       completedCount,
       totalCount,
@@ -171,6 +173,7 @@ export function RouteProvider({ children, routeId }: RouteProviderProps) {
     [
       route,
       isLoading,
+      isError,
       activeStopId,
       completedCount,
       totalCount,

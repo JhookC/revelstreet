@@ -27,12 +27,29 @@ interface BodyProps {
 }
 
 function RouteScreenBody({ onBack }: BodyProps) {
-  const { isLoading } = useRoute();
+  const { isLoading, isError } = useRoute();
 
   if (isLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center text-[var(--color-content-muted)]">
         Loading route…
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 text-center">
+        <p className="text-base font-semibold text-[var(--color-content)]">Route not found</p>
+        {onBack && (
+          <button
+            type="button"
+            onClick={onBack}
+            className="text-sm text-[var(--color-content-muted)] underline hover:text-[var(--color-content)]"
+          >
+            ← Back to fleet
+          </button>
+        )}
       </div>
     );
   }
