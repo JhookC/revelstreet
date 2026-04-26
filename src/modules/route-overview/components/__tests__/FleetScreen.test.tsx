@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   RouterProvider,
@@ -33,36 +34,34 @@ async function renderFleet(initialData?: typeof MOCK_FLEET) {
 }
 
 describe('FleetScreen', () => {
-  it('renders the Fleet Overview heading', async () => {
+  it('renders the pickup/delivery toggle', async () => {
     await renderFleet(MOCK_FLEET);
-    expect(screen.getByText('Fleet Overview')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Pickups' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Deliveries' })).toBeInTheDocument();
   });
 
-  it('renders a card for each route', async () => {
+  it('defaults to pickups view in the drawer peek', async () => {
     await renderFleet(MOCK_FLEET);
-    expect(screen.getByText('op-fox-7')).toBeInTheDocument();
-    expect(screen.getByText('op-echo-3')).toBeInTheDocument();
-    expect(screen.getByText('op-victor-2')).toBeInTheDocument();
+    expect(screen.getByText('Pickup routes')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Pickups' })).toHaveAttribute('aria-pressed', 'true');
   });
 
-  it('shows loading state when no data is cached', async () => {
+  it('switches to deliveries view when the toggle is clicked', async () => {
+    const user = userEvent.setup();
+    await renderFleet(MOCK_FLEET);
+    await user.click(screen.getByRole('button', { name: 'Deliveries' }));
+    expect(screen.getByText('Delivery routes')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Deliveries' })).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('shows loading state in the drawer peek when no data is cached', async () => {
     await renderFleet();
-    expect(screen.getByText('Loading fleet…')).toBeInTheDocument();
+    expect(screen.getByText('Loading…')).toBeInTheDocument();
   });
 
-  it('shows empty state when the fleet has no routes', async () => {
+  it('shows empty state in the drawer peek when the fleet has no routes', async () => {
     await renderFleet([]);
-    expect(screen.getByText('No routes assigned.')).toBeInTheDocument();
+    expect(screen.getByText('No routes assigned')).toBeInTheDocument();
   });
 
-  it('sorts routes so in-progress appears before not-started', async () => {
-    await renderFleet(MOCK_FLEET); // order: not-started, in-progress, not-started
-    const cards = screen.getAllByRole('link'); // RouteCard renders a Link
-    // route-002 (in-progress) should come before route-001 and route-003 (not-started)
-    const positions = ['op-echo-3', 'op-fox-7', 'op-victor-2'].map((op) =>
-      cards.findIndex((c) => c.textContent?.includes(op)),
-    );
-    expect(positions[0]!).toBeLessThan(positions[1]!);
-    expect(positions[0]!).toBeLessThan(positions[2]!);
-  });
 });

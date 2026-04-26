@@ -1,21 +1,28 @@
 import { useRef } from 'react';
 import { Modal } from '@heroui/react';
-import type { FailureReason } from '../types';
 
-const REASONS: { id: FailureReason; label: string; hint: string }[] = [
-  { id: 'refused', label: 'Refused', hint: 'Recipient declined the package' },
-  { id: 'wrong-address', label: 'Wrong address', hint: 'No matching address found' },
-  { id: 'no-recipient', label: 'No recipient', hint: 'Nobody available to receive' },
-  { id: 'damaged', label: 'Damaged', hint: 'Package compromised in transit' },
-];
+export type IncidentReason =
+  | 'weather-concern'
+  | 'obstacle'
+  | 'device-fault'
+  | 'no-fly-conflict'
+  | 'other';
 
 interface Props {
   open: boolean;
-  onPick: (reason: FailureReason) => void;
+  onPick: (reason: IncidentReason) => void;
   onClose: () => void;
 }
 
-export function FailureReasonSheet({ open, onPick, onClose }: Props) {
+const REASONS: { id: IncidentReason; label: string; hint: string; emoji: string }[] = [
+  { id: 'weather-concern', label: 'Weather concern', hint: 'Conditions deteriorating', emoji: '🌩️' },
+  { id: 'obstacle', label: 'Obstacle on route', hint: 'Crane, scaffolding, debris', emoji: '⚠️' },
+  { id: 'device-fault', label: 'Device fault', hint: 'Sensor or hardware issue', emoji: '🛠️' },
+  { id: 'no-fly-conflict', label: 'No-fly conflict', hint: 'Restricted airspace ahead', emoji: '🚫' },
+  { id: 'other', label: 'Other', hint: 'Describe in dispatch notes', emoji: '✏️' },
+];
+
+export function IncidentReportSheet({ open, onPick, onClose }: Props) {
   const pointerInsideRef = useRef(false);
 
   return (
@@ -36,7 +43,7 @@ export function FailureReasonSheet({ open, onPick, onClose }: Props) {
           >
             <Modal.Header className="px-5 pt-5 pb-3">
               <Modal.Heading className="text-base font-semibold text-white">
-                Why did this fail?
+                Report an issue
               </Modal.Heading>
             </Modal.Header>
             <Modal.Body className="px-5 pb-2">
@@ -47,12 +54,15 @@ export function FailureReasonSheet({ open, onPick, onClose }: Props) {
                     type="button"
                     onClick={() => onPick(r.id)}
                     className={[
-                      'flex min-h-[52px] flex-col justify-center px-1 py-3 text-left transition hover:opacity-70 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-status-failed',
+                      'flex min-h-[52px] items-center gap-3 px-1 py-3 text-left transition hover:opacity-70 active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-status-warning',
                       i > 0 ? 'border-t border-white/8' : '',
                     ].join(' ')}
                   >
-                    <span className="text-sm font-semibold text-white">{r.label}</span>
-                    <span className="text-xs text-white/50">{r.hint}</span>
+                    <span aria-hidden className="text-xl leading-none">{r.emoji}</span>
+                    <span className="flex flex-col">
+                      <span className="text-sm font-semibold text-white">{r.label}</span>
+                      <span className="text-xs text-white/50">{r.hint}</span>
+                    </span>
                   </button>
                 ))}
               </div>

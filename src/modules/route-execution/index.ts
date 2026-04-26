@@ -1,4 +1,5 @@
 export { RouteScreen } from './components/RouteScreen';
+export { RouteTimelinePanel } from './components/RouteTimelinePanel';
 export { RouteProvider, useRoute } from './context/RouteContext';
 export { routeKeys, useTelemetryQuery, useWeatherQuery } from './api';
 export type {

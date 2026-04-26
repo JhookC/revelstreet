@@ -15,6 +15,11 @@ export function resetStore(): void {
   stores = new Map(MOCK_FLEET.map((r) => [r.id, structuredClone(r)]));
 }
 
+/** Replace the in-memory fleet store. Used at app startup with location-aware routes. */
+export function setStore(routes: Route[]): void {
+  stores = new Map(routes.map((r) => [r.id, structuredClone(r)]));
+}
+
 interface PatchStopBody {
   status: StopStatus;
   reason?: FailureReason;

@@ -49,3 +49,153 @@ body {
   color: var(--color-content);
   -webkit-font-smoothing: antialiased;
 }
+
+/* ── Mapbox controls: iOS dark-glass styling ─────────────────
+ * Map style is always dark-v11, so controls are always dark-glass.
+ */
+
+.mapboxgl-ctrl-bottom-right {
+  bottom: 6.5rem !important; /* clear the bottom CommandCard */
+}
+
+.mapboxgl-ctrl-group {
+  background: rgba(20, 22, 28, 0.55) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 14px !important;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+  margin: 0 12px 12px 0 !important;
+}
+
+.mapboxgl-ctrl-group button {
+  width: 44px !important;
+  height: 44px !important;
+  background: transparent !important;
+}
+
+.mapboxgl-ctrl-group button:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.mapboxgl-ctrl-group button + button {
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.mapboxgl-ctrl-group button .mapboxgl-ctrl-icon {
+  filter: invert(1) brightness(2) opacity(0.9);
+}
+
+/* ── Mapbox attribution: minimized via compact "i" + low opacity
+ * NOTE: The Mapbox wordmark logo is hidden below. This requires an
+ * Enterprise plan ("Hide Mapbox Logo" feature) to be TOS-compliant.
+ * On free/standard plans, remove the .mapboxgl-ctrl-logo rule.
+ */
+
+.mapboxgl-ctrl-attrib {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 8px !important;
+  margin: 0 0 6px 6px !important;
+  padding: 0 4px !important;
+  opacity: 0.35;
+  transition: opacity 0.2s ease;
+}
+
+.mapboxgl-ctrl-attrib:hover {
+  opacity: 1;
+}
+
+.mapboxgl-ctrl-attrib,
+.mapboxgl-ctrl-attrib a {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 9px !important;
+}
+
+.mapboxgl-ctrl-attrib-button {
+  background-color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.mapboxgl-ctrl-logo {
+  display: none !important;
+}
+
+/* React-rendered popups: strip Mapbox's default white tooltip chrome
+ * so the StopPopupCard component owns its visual styling. */
+.revelstreet-popup .mapboxgl-popup-content {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.revelstreet-popup .mapboxgl-popup-tip {
+  display: none !important;
+}
+
+/* ── iOS-style glass surfaces ────────────────────────────
+ * Designed to overlay the always-dark Mapbox basemap.
+ * The saturate() boost pulls hue from the underlying map so the panel
+ * feels like real frosted glass — not a flat semi-transparent overlay.
+ *
+ * Inner highlight (top edge) + soft drop shadow give the depth that
+ * a pure backdrop-blur lacks.
+ *
+ * Use .glass-pane for big panels (timeline, drawers).
+ * Use .glass-chip for compact chrome (CommandCard, top toggles, pills).
+ */
+
+.glass-pane {
+  /* Dark vibrant material: enough density for white text to read,
+   * but the saturate() boost lets the underlying map color through. */
+  background-image: linear-gradient(
+    to bottom,
+    rgba(18, 20, 26, 0.62),
+    rgba(18, 20, 26, 0.74)
+  );
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow:
+    0 12px 40px -8px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
+}
+
+.glass-chip {
+  /* Same dark vibrant tone as .glass-pane but slightly less opaque —
+   * chips are smaller and benefit from a tiny bit more "float". */
+  background-image: linear-gradient(
+    to bottom,
+    rgba(18, 20, 26, 0.55),
+    rgba(18, 20, 26, 0.65)
+  );
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow:
+    0 6px 24px -4px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
+}
+
+/* Same as .glass-chip but without the outer drop shadow —
+ * use when the element is inside an overflow:hidden container
+ * that would clip the shadow into a hard rectangular edge. */
+@keyframes scanline {
+  from { top: -2px; }
+  to   { top: 100%; }
+}
+
+.glass-chip-flat {
+  background-image: linear-gradient(
+    to bottom,
+    rgba(18, 20, 26, 0.55),
+    rgba(18, 20, 26, 0.65)
+  );
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
+}
+

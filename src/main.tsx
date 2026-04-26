@@ -3,10 +3,19 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
+import { generateMockFleet } from '@/mock/route-generator';
+import { DEFAULT_LOCATION } from '@/shared/utils/geolocation';
 
 async function enableMocking() {
   if (import.meta.env.PROD) return;
-  const { worker } = await import('./mocks/browser');
+
+  const [{ worker }, { setStore }] = await Promise.all([
+    import('./mocks/browser'),
+    import('./mocks/handlers'),
+  ]);
+
+  setStore(generateMockFleet(DEFAULT_LOCATION));
+
   return worker.start({ onUnhandledRequest: 'bypass' });
 }
 

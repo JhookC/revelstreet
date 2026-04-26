@@ -1,9 +1,19 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { RouteProvider, useRoute } from '../context/RouteContext';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
+import { useTelemetryQuery, useWeatherQuery } from '../api';
 import type { StopStatus } from '../types';
-import { ProgressHeader } from './ProgressHeader';
-import { StopList } from './StopList';
+import { calculateEtaMinutes } from '../utils/eta';
+import { CommandCard } from '@/shared/components/CommandCard';
+import { FlagIcon, MapIcon } from '@/shared/components/icons';
+import { useIsLandscape } from '@/shared/hooks/useIsLandscape';
+import { CameraFeedPip } from '@/shared/components/CameraFeedPip';
+import { ActiveStopPeek } from './ActiveStopPeek';
+import { IncidentReportSheet, type IncidentReason } from './IncidentReportSheet';
+import { PrimaryActionStack } from './PrimaryActionStack';
+import { RouteOverlay } from './RouteOverlay';
+import { RouteTimelinePanel } from './RouteTimelinePanel';
+import { TimelineDrawer } from './TimelineDrawer';
 import { UndoToast } from './UndoToast';
 import { MapView } from '@/modules/map-view';
 
@@ -28,7 +38,15 @@ interface BodyProps {
 }
 
 function RouteScreenBody({ onBack }: BodyProps) {
-  const { isLoading, isError, route } = useRoute();
+  const { isLoading, isError, route, activeStop, completedCount, totalCount, markStatus } =
+    useRoute();
+  const { data: telemetryDrone } = useTelemetryQuery(route.id);
+  const { data: weather } = useWeatherQuery();
+  const drone = telemetryDrone ?? route.drone;
+  const isLandscape = useIsLandscape();
+  const [timelineOpen, setTimelineOpen] = useState(false);
+  const [incidentOpen, setIncidentOpen] = useState(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -55,30 +73,81 @@ function RouteScreenBody({ onBack }: BodyProps) {
     );
   }
 
+  const eta = calculateEtaMinutes(activeStop, drone);
+  const completionPct = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
+  const centerValue = activeStop ? (eta != null ? String(eta) : '—') : '✓';
+  const centerUnit = activeStop ? 'min' : 'done';
+
+  const handleIncident = (reason: IncidentReason) => {
+    // eslint-disable-next-line no-console
+    console.warn('[incident-report]', { routeId: route.id, reason, at: Date.now() });
+    setIncidentOpen(false);
+  };
+
   return (
-    <div className="min-h-dvh bg-surface">
-      <ProgressHeader onBack={onBack} />
+    <div className="relative h-dvh bg-surface">
+      <MapView stops={route.stops} drone={drone} className="h-full w-full" />
 
-      {/*
-        Mobile/tablet: map above list (collapsible feel, fixed height).
-        Desktop lg+: side-by-side — map fills left, stop list scrolls right.
-      */}
-      <div className="lg:flex lg:h-[calc(100dvh-var(--header-h,140px))]">
-        {/* Map panel */}
-        <div className="h-52 flex-shrink-0 sm:h-64 lg:h-full lg:w-[45%] lg:border-r lg:border-border">
-          <MapView
-            stops={route.stops}
-            drone={route.drone}
-            className="h-full w-full"
-          />
-        </div>
+      <RouteOverlay
+        onBack={onBack}
+        onCameraToggle={() => setCameraOpen((v) => !v)}
+        cameraOpen={cameraOpen}
+      />
 
-        {/* Stop list panel */}
-        {/* padding clears the fixed UndoToast (≈56px tall + 16px offset + buffer) */}
-        <main className="flex-1 overflow-y-auto pb-24 lg:pb-24">
-          <StopList />
-        </main>
+      {/* Landscape: persistent right-side timeline with all stops + inline actions */}
+      {isLandscape && (
+        <RouteTimelinePanel
+          routeId={route.id}
+          stops={route.stops}
+          drone={drone ?? null}
+          grounded={weather?.level === 'grounded'}
+          onMarkStatus={markStatus}
+          className="fixed right-5 top-20 bottom-24 z-30 w-[22rem] max-w-[24rem]"
+        />
+      )}
+
+      {/* Bottom command card. Portrait: centered with PrimaryActionStack
+          stacked on top. Landscape: bottom-left, no stack (panel owns actions). */}
+      <div
+        className={[
+          'fixed bottom-6 z-30 flex flex-col items-center gap-3',
+          isLandscape ? 'left-6' : 'left-1/2 -translate-x-1/2',
+        ].join(' ')}
+      >
+        {!isLandscape && <PrimaryActionStack />}
+        {!isLandscape && <ActiveStopPeek onExpand={() => setTimelineOpen(true)} />}
+        <CommandCard
+          leftIcon={<MapIcon size={22} />}
+          leftLabel="Open route timeline"
+          onLeftPress={() => setTimelineOpen(true)}
+          centerValue={centerValue}
+          centerUnit={centerUnit}
+          centerProgressPct={completionPct}
+          rightIcon={<FlagIcon size={22} />}
+          rightLabel="Report an issue"
+          onRightPress={() => setIncidentOpen(true)}
+          stats={drone ? [
+            { label: 'Range', value: `~${Math.round((drone.batteryPct / 100) * 8)} km` },
+            { label: 'Service', value: '12 h' },
+            { label: 'Signal', value: 'Strong' },
+            { label: 'Wind', value: '8 km/h' },
+          ] : undefined}
+        />
       </div>
+
+      <TimelineDrawer open={timelineOpen} onClose={() => setTimelineOpen(false)} />
+      <IncidentReportSheet
+        open={incidentOpen}
+        onPick={handleIncident}
+        onClose={() => setIncidentOpen(false)}
+      />
+
+      <CameraFeedPip
+        open={cameraOpen}
+        onClose={() => setCameraOpen(false)}
+        altitude={drone?.altitude}
+        speedMs={drone?.speedMs}
+      />
 
       <UndoToast />
     </div>

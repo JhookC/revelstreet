@@ -3,7 +3,11 @@ import { useRoute } from '../context/RouteContext';
 import { FINAL_STATUSES, type Stop } from '../types';
 import { StopRow } from './StopRow';
 
-export function StopList() {
+interface Props {
+  viewMode?: 'pickups' | 'deliveries' | 'all';
+}
+
+export function StopList({ viewMode = 'all' }: Props = {}) {
   const { route, activeStopId } = useRoute();
   const rowRefs = useRef<Map<string, HTMLLIElement>>(new Map());
   // Initialize to null so the first effect run after mount (post-refresh)
@@ -72,18 +76,22 @@ export function StopList() {
     );
   };
 
+  const showPickups = viewMode === 'all' || viewMode === 'pickups';
+  const showDeliveries = viewMode === 'all' || viewMode === 'deliveries';
+  const showHeaders = viewMode === 'all';
+
   return (
     <div className="mx-auto max-w-2xl px-5 py-6">
-      {pickups.length > 0 && (
-        <section className="mb-8">
-          <SectionHeader title="Pickups" stops={pickups} />
-          <ul className="mt-3 space-y-3">{pickups.map(renderStop)}</ul>
+      {showPickups && pickups.length > 0 && (
+        <section className={showDeliveries ? 'mb-8' : ''}>
+          {showHeaders && <SectionHeader title="Pickups" stops={pickups} />}
+          <ul className={showHeaders ? 'mt-3 space-y-3' : 'space-y-3'}>{pickups.map(renderStop)}</ul>
         </section>
       )}
-      {deliveries.length > 0 && (
+      {showDeliveries && deliveries.length > 0 && (
         <section>
-          <SectionHeader title="Deliveries" stops={deliveries} />
-          <ul className="mt-3 space-y-3">{deliveries.map(renderStop)}</ul>
+          {showHeaders && <SectionHeader title="Deliveries" stops={deliveries} />}
+          <ul className={showHeaders ? 'mt-3 space-y-3' : 'space-y-3'}>{deliveries.map(renderStop)}</ul>
         </section>
       )}
     </div>
