@@ -1,6 +1,8 @@
 # Revelstreet — Drone Delivery Operator Interface
 
-Frontend for a drone-delivery operator app. Operators manage multi-stop runs (restaurant pickups → residential deliveries) for a single drone. Tablet-first single-route execution screen with offline-friendly progress tracking.
+Tablet-first operator interface for drone-delivery runs. Operators manage multi-stop routes (restaurant pickups → residential deliveries) with real-time drone telemetry, map-first navigation, and offline-friendly progress tracking.
+
+![Revelstreet preview](docs/preview.png)
 
 ## Stack
 
@@ -8,6 +10,7 @@ Frontend for a drone-delivery operator app. Operators manage multi-stop runs (re
 - Tailwind v4 (CSS-first config)
 - TanStack Query + TanStack Router
 - HeroUI v3 components
+- Mapbox GL JS — full-screen map, 3D buildings, animated drone marker
 - MSW for API mocking
 
 ## Quick start
