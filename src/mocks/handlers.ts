@@ -3,6 +3,7 @@ import { MOCK_FLEET } from '@/mock/fleet';
 import type {
   DronePosition,
   FailureReason,
+  FleetTelemetryEntry,
   Route,
   StopStatus,
   WeatherCondition,
@@ -83,6 +84,25 @@ export const handlers = [
     };
 
     return HttpResponse.json(drone);
+  }),
+
+  // Aggregated fleet drone telemetry — all drones with jitter
+  http.get('/api/fleet/telemetry', () => {
+    const jitter = () => (Math.random() - 0.5) * 0.0002;
+    const telemetry: FleetTelemetryEntry[] = [...stores.values()]
+      .filter((r): r is Route & { drone: DronePosition } => r.drone != null)
+      .map((r) => ({
+        routeId: r.id,
+        drone: {
+          ...r.drone,
+          lng: r.drone.lng + jitter(),
+          lat: r.drone.lat + jitter(),
+          heading: (r.drone.heading + Math.round((Math.random() - 0.5) * 10) + 360) % 360,
+          speedMs: Math.max(0, r.drone.speedMs + (Math.random() - 0.5) * 0.5),
+          batteryPct: Math.max(0, r.drone.batteryPct - Math.random() * 0.05),
+        },
+      }));
+    return HttpResponse.json(telemetry);
   }),
 
   // Static mock weather — advisory level to test the banner

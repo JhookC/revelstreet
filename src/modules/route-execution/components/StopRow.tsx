@@ -2,6 +2,7 @@ import { useEffect, useState, type Ref } from 'react';
 import { Button } from '@heroui/react';
 import type { FailureReason, Stop, StopStatus } from '../types';
 import { useRoute } from '../context/RouteContext';
+import { useWeatherQuery } from '../api';
 import { StatusPill } from './StatusPill';
 import { FailureReasonSheet } from './FailureReasonSheet';
 import { PhotoProof } from './PhotoProof';
@@ -21,6 +22,8 @@ const formatReason = (r: FailureReason) =>
 
 export function StopRow({ stop, isActive, isLocked, ref }: Props) {
   const { markStatus, addPhoto } = useRoute();
+  const { data: weather } = useWeatherQuery();
+  const isGrounded = weather?.level === 'grounded';
   const [pickerOpen, setPickerOpen] = useState(false);
   const lastEntry = stop.history.at(-1);
   const isTerminal = stop.status === 'success' || stop.status === 'failed';
@@ -39,6 +42,14 @@ export function StopRow({ stop, isActive, isLocked, ref }: Props) {
   const handle = (status: StopStatus) => () => markStatus(stop.id, status);
 
   function activeActions() {
+    if (isGrounded) {
+      return (
+        <p className="text-xs font-medium text-status-failed" role="status">
+          🛑 Operations suspended — weather grounded
+        </p>
+      );
+    }
+
     switch (stop.status) {
       case 'pending':
         return (

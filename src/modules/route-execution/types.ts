@@ -55,6 +55,11 @@ export interface Route {
   drone?: DronePosition;
 }
 
+export interface FleetTelemetryEntry {
+  routeId: string;
+  drone: DronePosition;
+}
+
 export const FINAL_STATUSES: ReadonlySet<StopStatus> = new Set([
   'success',
   'failed',

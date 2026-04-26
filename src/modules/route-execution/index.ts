@@ -5,6 +5,7 @@ export type {
   Coordinates,
   DronePosition,
   FailureReason,
+  FleetTelemetryEntry,
   Route,
   Stop,
   StopHistoryEntry,
