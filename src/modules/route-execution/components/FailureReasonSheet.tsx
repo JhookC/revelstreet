@@ -29,7 +29,7 @@ export function FailureReasonSheet({ open, onPick, onClose }: Props) {
       }}
     >
       <Modal.Container placement="bottom" size="sm">
-        <Modal.Dialog className="rounded-t-3xl sm:rounded-3xl !bg-[rgba(18,20,26,0.96)] border-0 shadow-2xl p-0">
+        <Modal.Dialog className="rounded-t-3xl sm:rounded-3xl !bg-sheet-dark border-0 shadow-2xl p-0">
           <div
             onPointerDown={() => { pointerInsideRef.current = true; }}
             onPointerUp={() => { pointerInsideRef.current = false; }}
@@ -61,7 +61,7 @@ export function FailureReasonSheet({ open, onPick, onClose }: Props) {
               <button
                 type="button"
                 onClick={onClose}
-                className="text-sm text-white/45 transition hover:text-white/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                className="min-h-[44px] px-4 text-sm text-white/45 transition hover:text-white/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               >
                 Cancel
               </button>

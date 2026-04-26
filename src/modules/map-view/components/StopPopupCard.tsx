@@ -85,20 +85,20 @@ export function StopPopupCard({ stop, drone }: Props) {
   }
 
   return (
-    <div className="min-w-[240px] rounded-2xl bg-surface-raised p-4 shadow-2xl ring-1 ring-border">
+    <div className="glass-pane min-w-[240px] rounded-2xl p-4">
       <div
         className={`flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide ${info.textAccent}`}
       >
         <span>{info.label}</span>
         <span className="opacity-50">·</span>
-        <span className="text-content-muted">Stop #{stop.order}</span>
+        <span className="text-white/50">Stop #{stop.order}</span>
       </div>
-      <h3 className="mt-1 text-base font-semibold text-content">{stop.label}</h3>
-      <p className="mt-0.5 text-xs text-content-muted">{stop.address}</p>
+      <h3 className="mt-1 text-base font-semibold text-white">{stop.label}</h3>
+      <p className="mt-0.5 text-xs text-white/55">{stop.address}</p>
 
-      <div className="mt-3 flex items-center justify-between border-t border-border pt-2 text-xs">
-        <span className="text-content-muted">Status</span>
-        <span className="font-semibold text-content">{statusLabel}</span>
+      <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2 text-xs">
+        <span className="text-white/55">Status</span>
+        <span className="font-semibold text-white">{statusLabel}</span>
       </div>
 
       {etaSection}

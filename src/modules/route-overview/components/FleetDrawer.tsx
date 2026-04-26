@@ -43,13 +43,15 @@ export function FleetDrawer({ open, onClose, route, drone, onOpenRoute }: Props)
         style={{ maxHeight: '85dvh' }}
       >
         {/* Drag handle */}
-        <div className="flex justify-center pb-2 pt-3">
+        <div className="flex justify-center">
           <button
             type="button"
             onClick={onClose}
             aria-label="Close timeline"
-            className="h-1.5 w-12 rounded-full bg-white/20 transition hover:bg-white/35"
-          />
+            className="flex min-h-[44px] w-full items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <span className="h-1.5 w-12 rounded-full bg-white/20 transition hover:bg-white/35 pointer-events-none" />
+          </button>
         </div>
 
         {route ? (

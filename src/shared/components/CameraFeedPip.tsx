@@ -65,7 +65,7 @@ export function CameraFeedPip({ open, onClose, altitude, speedMs }: Props) {
 
   if (mode === 'fullscreen') {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col bg-[#080b0f]">
+      <div className="fixed inset-0 z-50 flex flex-col bg-camera-feed">
         <div className="flex items-center justify-between px-5 pt-12 pb-4">
           <LiveBadge />
           <div className="flex items-center gap-2">
@@ -73,7 +73,7 @@ export function CameraFeedPip({ open, onClose, altitude, speedMs }: Props) {
               type="button"
               onClick={() => setMode('pip')}
               aria-label="Minimize to picture-in-picture"
-              className="glass-chip flex size-9 items-center justify-center rounded-full text-white/70 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="glass-chip flex size-11 items-center justify-center rounded-full text-white/70 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               <svg viewBox="0 0 24 24" width={16} height={16} fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
                 <path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3" />
@@ -83,7 +83,7 @@ export function CameraFeedPip({ open, onClose, altitude, speedMs }: Props) {
               type="button"
               onClick={onClose}
               aria-label="Close camera"
-              className="glass-chip flex size-9 items-center justify-center rounded-full text-white/70 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="glass-chip flex size-11 items-center justify-center rounded-full text-white/70 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               ✕
             </button>
@@ -125,9 +125,9 @@ export function CameraFeedPip({ open, onClose, altitude, speedMs }: Props) {
           type="button"
           onClick={(e) => { e.stopPropagation(); onClose(); }}
           aria-label="Close camera"
-          className="absolute right-1.5 top-1.5 flex size-5 items-center justify-center rounded-full bg-black/50 text-[10px] text-white/70 transition hover:text-white focus-visible:outline-2 focus-visible:outline-accent"
+          className="group absolute right-0 top-0 flex min-h-[44px] min-w-[44px] items-start justify-end p-1.5 focus-visible:outline-2 focus-visible:outline-accent"
         >
-          ✕
+          <span className="flex size-5 items-center justify-center rounded-full bg-black/50 text-[10px] text-white/70 transition group-hover:text-white">✕</span>
         </button>
 
         <p className="absolute bottom-1.5 right-2 select-none text-[8px] text-white/30">
@@ -157,7 +157,7 @@ interface FeedProps {
 
 function MockFeed({ altitude, speedMs, fullscreen }: FeedProps) {
   return (
-    <div className="relative h-full w-full bg-[#080b0f]">
+    <div className="relative h-full w-full bg-camera-feed">
       {/* Simulated aerial ground texture */}
       <div
         className="absolute inset-0 opacity-25"

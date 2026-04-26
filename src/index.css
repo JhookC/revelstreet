@@ -18,6 +18,9 @@
   --color-status-success: oklch(58% 0.18 145);
   --color-status-failed: oklch(58% 0.22 25);
   --color-status-locked: oklch(85% 0.005 250);
+
+  --color-camera-feed: oklch(4% 0.008 250);
+  --color-sheet-dark: oklch(8% 0.01 250 / 96%);
 }
 
 /* Dark mode token overrides — applied when <html data-theme="dark"> */
@@ -55,7 +58,17 @@ body {
  */
 
 .mapboxgl-ctrl-bottom-right {
-  bottom: 6.5rem !important; /* clear the bottom CommandCard */
+  bottom: 6.5rem !important; /* portrait: clear the bottom CommandCard */
+}
+
+/* Landscape: drop controls to the bottom corner, aligned with the right panel */
+@media (orientation: landscape) {
+  .mapboxgl-ctrl-bottom-right {
+    bottom: 20px !important;
+  }
+  .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl-group {
+    margin: 0 20px 0 0 !important;
+  }
 }
 
 .mapboxgl-ctrl-group {

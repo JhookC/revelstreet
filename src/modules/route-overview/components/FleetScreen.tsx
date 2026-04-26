@@ -171,7 +171,7 @@ export function FleetScreen() {
           stops={focusRoute.stops}
           drone={focusDrone}
           onRowOpen={() => handleSelectRoute(focusRoute.id)}
-          className="fixed right-5 top-20 bottom-24 z-30 w-[22rem] max-w-[24rem]"
+          className="fixed right-5 top-20 bottom-32 z-30 w-[22rem] max-w-[24rem]"
         />
       )}
 

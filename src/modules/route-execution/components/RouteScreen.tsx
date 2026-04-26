@@ -102,7 +102,7 @@ function RouteScreenBody({ onBack }: BodyProps) {
           drone={drone ?? null}
           grounded={weather?.level === 'grounded'}
           onMarkStatus={markStatus}
-          className="fixed right-5 top-20 bottom-24 z-30 w-[22rem] max-w-[24rem]"
+          className="fixed right-5 top-20 bottom-32 z-30 w-[22rem] max-w-[24rem]"
         />
       )}
 

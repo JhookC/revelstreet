@@ -172,13 +172,15 @@ export function CommandCard({
               onClick={stats ? () => setExpanded((v) => !v) : topTabAction}
               aria-label={stats ? (expanded ? 'Collapse drone stats' : 'Expand drone stats') : 'Open timeline'}
               aria-expanded={stats ? expanded : undefined}
-              className="glass-chip -mb-2 flex h-5 w-12 items-center justify-center rounded-t-xl text-[10px] text-white/70 transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="-mb-2 flex min-h-[44px] w-12 flex-col items-center justify-end focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
-              <span
-                aria-hidden
-                className={['inline-block transition-transform duration-300', expanded ? 'rotate-180' : ''].join(' ')}
-              >
-                ▲
+              <span className="glass-chip flex h-5 w-12 items-center justify-center rounded-t-xl text-[10px] text-white/70 transition hover:text-white">
+                <span
+                  aria-hidden
+                  className={['inline-block transition-transform duration-300', expanded ? 'rotate-180' : ''].join(' ')}
+                >
+                  ▲
+                </span>
               </span>
             </button>
           )}

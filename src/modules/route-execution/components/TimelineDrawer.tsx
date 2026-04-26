@@ -53,13 +53,15 @@ export function TimelineDrawer({ open, onClose }: Props) {
         ].join(' ')}
         style={{ maxHeight: '85dvh' }}
       >
-        <div className="flex justify-center pb-1 pt-3">
+        <div className="flex justify-center">
           <button
             type="button"
             onClick={onClose}
             aria-label="Close timeline"
-            className="h-1.5 w-12 rounded-full bg-white/30 transition hover:bg-white/50"
-          />
+            className="flex min-h-[44px] w-full items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <span className="h-1.5 w-12 rounded-full bg-white/30 transition hover:bg-white/50 pointer-events-none" />
+          </button>
         </div>
 
         <RouteTimelinePanel
